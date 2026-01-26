@@ -1,0 +1,122 @@
+# Step Counter App - Project Rules
+
+## Tổng quan dự án
+- **Tên dự án**: Step Counter
+- **Framework**: Flutter (Dart SDK ^3.10.7)
+- **Platform**: Chỉ hỗ trợ Android (không cần iOS)
+- **Kiến trúc**: Feature-based architecture với GetX state management
+- **Dependency Injection**: GetIt (get_it: ^9.2.0)
+- **State Management**: GetX (get: ^4.7.3)
+- **Native Code**: Có thể viết native Android code (Kotlin/Java) khi cần
+
+## Cấu trúc thư mục
+
+```
+lib/
+├── core/                    # Core functionality
+│   ├── constants/          # App constants, strings, colors
+│   ├── di/                 # Dependency injection setup
+│   ├── router/             # App routing và navigation (GetX routes)
+│   └── untils/             # Utility functions và helpers
+├── features/               # Feature modules
+│   └── [feature_name]/    # Mỗi feature có cấu trúc:
+│       ├── model/         # Data models
+│       ├── repositories/  # Data repositories
+│       ├── service/       # Business logic services
+│       ├── viewmodels/    # GetX controllers/viewmodels
+│       └── views/         # UI screens/widgets
+│           └── widgets/  # Reusable widgets cho feature này
+└── main.dart              # Entry point
+```
+
+## Quy tắc phát triển
+
+### 1. Kiến trúc Feature-based
+- Mỗi feature là một module độc lập với đầy đủ: model, repository, service, viewmodel, views
+- Features không phụ thuộc trực tiếp vào nhau
+- Giao tiếp giữa features thông qua core hoặc events
+
+### 2. State Management với GetX
+- Sử dụng GetXController cho state management
+- Đặt controllers trong thư mục `viewmodels/`
+- Sử dụng GetX reactive programming (`.obs`, `Obx`, `GetBuilder`)
+
+### 3. Dependency Injection
+- Sử dụng GetIt cho dependency injection
+- Setup DI trong `lib/core/di/`
+- Đăng ký tất cả dependencies trong một file setup
+
+### 4. Naming Conventions
+- **Files**: snake_case (ví dụ: `step_counter_service.dart`)
+- **Classes**: PascalCase (ví dụ: `StepCounterService`)
+- **Variables/Functions**: camelCase (ví dụ: `stepCount`, `getStepCount()`)
+- **Constants**: UPPER_SNAKE_CASE (ví dụ: `MAX_STEPS_PER_DAY`)
+
+### 5. Code Organization
+- Mỗi file chỉ chứa một class chính
+- Tách logic business ra service layer
+- UI chỉ xử lý presentation logic
+- Data access logic trong repository layer
+- **Tách widgets thành các widget con nhỏ**: Khi một view có nhiều phần UI phức tạp, tách thành các widget con riêng biệt trong thư mục `views/widgets/` để dễ tối ưu, mở rộng và test
+
+### 6. Assets
+- Sử dụng `flutter_svg` cho SVG icons
+- Đặt assets trong thư mục `assets/`
+- Khai báo assets trong `pubspec.yaml`
+
+### 7. Responsive Design với MediaQuery
+- **Luôn sử dụng MediaQuery** để lấy kích thước màn hình và tránh tràn viền
+- Sử dụng `MediaQuery.of(context)` để lấy `size`, `padding`, `viewInsets`
+- Không hardcode kích thước, luôn tính toán dựa trên màn hình thực tế
+- Sử dụng `MediaQuery` trong widget tests để mock kích thước màn hình
+- Ví dụ: `MediaQuery.of(context).size.width`, `MediaQuery.of(context).padding.top`
+- Tạo helper functions trong `lib/core/untils/` để tính toán responsive nếu cần
+
+## Dependencies hiện tại
+- `get: ^4.7.3` - State management và routing
+- `get_it: ^9.2.0` - Dependency injection
+- `flutter_svg: ^2.2.3` - SVG support
+- `cupertino_icons: ^1.0.8` - iOS icons
+
+## Mục đích ứng dụng
+Ứng dụng đếm bước chân (Step Counter) - theo dõi số bước đi hàng ngày của người dùng.
+
+## Quy tắc khi code
+1. **Luôn tuân thủ cấu trúc thư mục**: Đặt code đúng vị trí theo feature và layer
+2. **Sử dụng GetX**: Cho state management và navigation
+3. **Dependency Injection**: Luôn inject dependencies qua GetIt, không tạo instance trực tiếp
+4. **Separation of Concerns**: Tách biệt rõ ràng giữa UI, Business Logic, và Data layers
+5. **Error Handling**: Luôn xử lý errors một cách rõ ràng
+6. **Comments**: Comment bằng tiếng Việt cho các logic phức tạp
+7. **Type Safety**: Luôn khai báo types rõ ràng, tránh `dynamic` khi có thể
+8. **File Size Limit**: Mỗi file code không được vượt quá 100 dòng
+9. **Single Responsibility**: Mỗi hàm/method chỉ làm duy nhất 1 nhiệm vụ
+10. **Communication**: Luôn trả lời và giải thích bằng tiếng Việt
+11. **MediaQuery cho Responsive**: Luôn sử dụng MediaQuery để tránh tràn viền và dễ test
+
+## Khi thêm feature mới
+1. Tạo thư mục feature trong `lib/features/[feature_name]/`
+2. Tạo các thư mục con: model, repositories, service, viewmodels, views
+3. Đăng ký dependencies trong `lib/core/di/`
+4. Thêm routes vào `lib/core/router/` nếu cần navigation
+5. Thêm constants nếu cần trong `lib/core/constants/`
+
+## Router (Navigation)
+- Router được quản lý trong `lib/core/router/`
+- Sử dụng GetX routing (`GetMaterialApp`, `GetPage`, `Get.to()`, etc.)
+- Định nghĩa tất cả routes trong một file hoặc chia theo feature
+- Route names nên được định nghĩa trong constants
+
+## Lưu ý đặc biệt
+- App là step counter nên có thể cần quyền truy cập sensor (accelerometer, pedometer)
+- **Chỉ xử lý permissions cho Android** (không cần iOS)
+- Có thể cần lưu trữ dữ liệu local (shared_preferences, hive, hoặc sqflite)
+- Cần xử lý background tasks để đếm bước khi app đóng
+- **Native Android Code**: Có thể viết native code trong `android/app/src/main/kotlin/` hoặc `android/app/src/main/java/` khi cần
+- Nếu file vượt quá 100 dòng, phải tách thành nhiều file nhỏ hơn
+- Mỗi hàm phải có tên mô tả rõ ràng nhiệm vụ của nó
+- luôn sử dụng tiếng việt khi comment code, và phản hồi bằng tiếng việt
+- thêm thư viện gì tìm hiểu kĩ doc trên pub.dev
+- qua mỗi chức năng hoặc 1 màn hình cần test kĩ laị các chức năng và UI bằng viết các test case và test widget sao cho phải tối ưu về tốc độ và độ chính xác
+- sao cho tối ưu về tốc độ và độ chính xác,UI chuẩn không bị tràn viền,đúng với thiết kế của tôi gửi.
+- viết code đẹp, sạch, dễ đọc, dễ hiểu, dễ maintain, dễ test như 1 senior developer.
