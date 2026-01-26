@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/features/home/views/home_view.dart';
+import 'package:step_counter/features/home/viewmodels/home_controller.dart';
 import 'package:step_counter/features/splash/views/splash_view.dart';
 import 'package:step_counter/features/splash/viewmodels/splash_controller.dart';
 import 'package:step_counter/features/welcome/views/welcome_view.dart';
@@ -22,7 +23,11 @@ class AppRouter {
       page: () => const WelcomeView(),
       binding: WelcomeBinding(),
     ),
-    GetPage(name: RouteNames.home, page: () => const HomeView()),
+    GetPage(
+      name: RouteNames.home,
+      page: () => const HomeView(),
+      binding: HomeBinding(),
+    ),
   ];
 }
 
@@ -39,5 +44,13 @@ class WelcomeBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<WelcomeController>(() => WelcomeController());
+  }
+}
+
+/// Binding cho HomeController - dùng lazyPut để tối ưu
+class HomeBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<HomeController>(() => HomeController());
   }
 }
