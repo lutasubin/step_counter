@@ -12,7 +12,7 @@ class SplashView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SplashController());
+    final controller = Get.find<SplashController>();
     final screenSize = MediaQuery.of(context).size;
     final padding = MediaQuery.of(context).padding;
 

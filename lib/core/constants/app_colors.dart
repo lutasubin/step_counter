@@ -10,4 +10,7 @@ class AppColors {
   // Màu loading bar
   static const Color loadingBarActive = Color(0xFFF65738);
   static const Color loadingBarInactive = Color(0xFF253047);
+
+  // Màu nút START
+  static const Color startButton = Color(0xFFF65738);
 }

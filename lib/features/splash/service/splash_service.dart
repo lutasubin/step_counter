@@ -6,13 +6,13 @@ class SplashService {
 
   SplashService(this._repository);
 
-  /// Kiểm tra có cần hiển thị splash không
-  Future<bool> shouldShowSplash() async {
-    return await _repository.isFirstLaunch();
+  /// Kiểm tra đã xem welcome chưa
+  Future<bool> hasSeenWelcome() async {
+    return await _repository.hasSeenWelcome();
   }
 
-  /// Đánh dấu đã hoàn thành splash
-  Future<void> completeSplash() async {
-    await _repository.setFirstLaunchShown();
+  /// Đánh dấu đã xem welcome
+  Future<void> setWelcomeSeen() async {
+    await _repository.setWelcomeSeen();
   }
 }

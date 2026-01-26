@@ -4,5 +4,10 @@ class AppAssets {
 
   // SVG assets
   static const String iconSplash = 'assets/svg/icon_splash.svg';
-  static const String appNameLogo = 'assets/svg/WalkFit – Step Counter.svg';
+  static const String appNameLogo = 'assets/svg/text_splash.svg';
+  static const String welcomeText = 'assets/svg/text_welcome.svg';
+
+  // Image assets
+  static const String welcomeBackground =
+      'assets/images/background_image_welcome.png';
 }

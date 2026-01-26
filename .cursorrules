@@ -20,7 +20,7 @@ lib/
 │   └── untils/             # Utility functions và helpers
 ├── features/               # Feature modules
 │   └── [feature_name]/    # Mỗi feature có cấu trúc:
-│       ├── model/         # Data models
+│       ├── model/         # Data models (optional - chỉ tạo khi cần)
 │       ├── repositories/  # Data repositories
 │       ├── service/       # Business logic services
 │       ├── viewmodels/    # GetX controllers/viewmodels
@@ -40,6 +40,21 @@ lib/
 - Sử dụng GetXController cho state management
 - Đặt controllers trong thư mục `viewmodels/`
 - Sử dụng GetX reactive programming (`.obs`, `Obx`, `GetBuilder`)
+- **Get.put() vs Get.lazyPut() - Quy tắc tối ưu**:
+  - **Get.put()**: Khởi tạo ngay lập tức
+    * Dùng khi: Controller cần ngay và chỉ dùng 1 lần trong màn hình
+    * Ví dụ: `Get.put(MyController())` trong build method (không khuyến khích)
+  - **Get.lazyPut()**: Khởi tạo khi được sử dụng lần đầu (KHUYẾN KHÍCH)
+    * Dùng trong Bindings để tối ưu performance
+    * Controller chỉ khởi tạo khi route được navigate
+    * Tiết kiệm bộ nhớ và tăng tốc độ khởi động app
+  - **Get.find()**: Lấy instance đã được đăng ký
+    * Dùng trong views để lấy controller từ Bindings
+    * Đảm bảo controller đã được khởi tạo trước khi sử dụng
+  - **Best Practice**:
+    * ✅ Tạo Bindings class cho mỗi route, dùng `Get.lazyPut()` trong dependencies()
+    * ✅ Trong views, dùng `Get.find<Controller>()` thay vì `Get.put()`
+    * ✅ Dùng `Get.put()` chỉ khi thực sự cần khởi tạo ngay (ít dùng)
 
 ### 3. Dependency Injection
 - Sử dụng GetIt cho dependency injection
@@ -106,6 +121,8 @@ lib/
 - Sử dụng GetX routing (`GetMaterialApp`, `GetPage`, `Get.to()`, etc.)
 - Định nghĩa tất cả routes trong một file hoặc chia theo feature
 - Route names nên được định nghĩa trong constants
+- **Sử dụng Bindings**: Tạo Bindings class cho mỗi route để quản lý dependencies
+- **Get.put() vs Get.lazyPut() trong Bindings**: Dùng `Get.lazyPut()` trong Bindings để tối ưu, chỉ khởi tạo khi route được navigate
 
 ## Lưu ý đặc biệt
 - App là step counter nên có thể cần quyền truy cập sensor (accelerometer, pedometer)
