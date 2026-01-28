@@ -96,12 +96,19 @@ class HomeController extends GetxController {
         ? realSteps
         : _activityData.value.stepCount;
 
+    // Lấy duration đã có trong DB để cộng dồn
+    final existingActivity = await _reportService.getActivityByDate(date);
+    final existingDuration = existingActivity?.durationSeconds ?? 0;
+
+    // Cộng dồn duration: duration hiện tại + duration đã có
+    final totalDuration = existingDuration + _elapsedSeconds.value;
+
     final activity = DailyActivityModel(
       date: date,
       steps: stepsToSave,
       calories: _stepCounterService.calculateCalories(stepsToSave),
       distance: _stepCounterService.calculateDistance(stepsToSave),
-      durationSeconds: _elapsedSeconds.value,
+      durationSeconds: totalDuration,
     );
 
     // Debug: In ra để kiểm tra
@@ -109,7 +116,9 @@ class HomeController extends GetxController {
     print('Steps: ${activity.steps}');
     print('Calories: ${activity.calories}');
     print('Distance: ${activity.distance}');
-    print('Duration: ${activity.durationSeconds}s');
+    print('Duration (new): ${_elapsedSeconds.value}s');
+    print('Duration (existing): $existingDuration s');
+    print('Duration (total): ${activity.durationSeconds}s');
     print('Date: ${activity.date}');
 
     await _reportService.saveActivity(activity);

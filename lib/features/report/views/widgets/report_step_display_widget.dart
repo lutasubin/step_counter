@@ -14,9 +14,8 @@ class ReportStepDisplayWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.selectedPeriod == PeriodType.day) {
-        final steps = controller.activities.isNotEmpty
-            ? controller.activities.first.steps
-            : 0;
+        // Với Day view, hiển thị tổng số bước của ngày, không phải chỉ khoảng đầu tiên
+        final steps = controller.getTotalSteps();
         return _buildDayView(steps);
       } else {
         final avgSteps = controller.getAverageSteps().toInt();
