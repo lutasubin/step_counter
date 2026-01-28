@@ -1,4 +1,4 @@
-package com.example.step_counter
+package com.mobileai.countersteppro
 
 import io.flutter.embedding.android.FlutterActivity
 
