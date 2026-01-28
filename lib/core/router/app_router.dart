@@ -1,7 +1,12 @@
 import 'package:get/get.dart';
 import 'package:step_counter/core/constants/route_names.dart';
+import 'package:step_counter/core/di/di_setup.dart';
+import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/home/views/home_view.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
+import 'package:step_counter/features/report/service/report_service.dart';
+import 'package:step_counter/features/report/views/report_view.dart';
+import 'package:step_counter/features/report/viewmodels/report_controller.dart';
 import 'package:step_counter/features/setting/views/setting_view.dart';
 import 'package:step_counter/features/setting/viewmodels/setting_controller.dart';
 import 'package:step_counter/features/splash/views/splash_view.dart';
@@ -37,6 +42,11 @@ class AppRouter {
       binding: SettingBinding(),
       transition: Transition.noTransition,
     ),
+    GetPage(
+      name: RouteNames.report,
+      page: () => const ReportView(),
+      binding: ReportBinding(),
+    ),
   ];
 }
 
@@ -60,7 +70,9 @@ class WelcomeBinding extends Bindings {
 class HomeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<HomeController>(() => HomeController());
+    Get.lazyPut<HomeController>(
+      () => HomeController(getIt<StepCounterService>()),
+    );
   }
 }
 
@@ -69,5 +81,15 @@ class SettingBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<SettingController>(() => SettingController());
+  }
+}
+
+/// Binding cho ReportController - dùng lazyPut để tối ưu
+class ReportBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<ReportController>(
+      () => ReportController(getIt<ReportService>()),
+    );
   }
 }

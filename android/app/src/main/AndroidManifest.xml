@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permission để đếm bước chân -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    
     <application
         android:label="Step Counter"
         android:name="${applicationName}"

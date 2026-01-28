@@ -41,4 +41,13 @@ class AppStrings {
   static const String rateUs = 'Rate us';
   static const String termsOfUse = 'Terms of use';
   static const String privacyPolicy = 'Privacy policy';
+
+  // Report screen
+  static const String reportCounter = 'Report counter';
+  static const String day = 'Day';
+  static const String week = 'Week';
+  static const String month = 'Month';
+  static const String avgPerDay = 'Avg / day';
+  static const String totalStep = 'Total step';
+  static const String step = 'Step';
 }

@@ -1,4 +1,10 @@
 import 'package:get_it/get_it.dart';
+import 'package:step_counter/features/home/repositories/step_counter_repository.dart';
+import 'package:step_counter/features/home/repositories/step_counter_repository_impl.dart';
+import 'package:step_counter/features/home/service/step_counter_service.dart';
+import 'package:step_counter/features/report/repositories/report_repository.dart';
+import 'package:step_counter/features/report/repositories/report_repository_impl.dart';
+import 'package:step_counter/features/report/service/report_service.dart';
 import 'package:step_counter/features/splash/repositories/splash_repository.dart';
 import 'package:step_counter/features/splash/repositories/splash_repository_impl.dart';
 import 'package:step_counter/features/splash/service/splash_service.dart';
@@ -10,9 +16,21 @@ final getIt = GetIt.instance;
 void setupDI() {
   // Đăng ký repositories
   getIt.registerLazySingleton<SplashRepository>(() => SplashRepositoryImpl());
+  getIt.registerLazySingleton<StepCounterRepository>(
+    () => StepCounterRepositoryImpl(),
+  );
+  getIt.registerLazySingleton<ReportRepository>(
+    () => ReportRepositoryImpl(),
+  );
 
   // Đăng ký services
   getIt.registerLazySingleton<SplashService>(
     () => SplashService(getIt<SplashRepository>()),
+  );
+  getIt.registerLazySingleton<StepCounterService>(
+    () => StepCounterService(getIt<StepCounterRepository>()),
+  );
+  getIt.registerLazySingleton<ReportService>(
+    () => ReportService(getIt<ReportRepository>()),
   );
 }

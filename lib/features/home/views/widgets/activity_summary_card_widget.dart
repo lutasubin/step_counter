@@ -64,7 +64,22 @@ class ActivitySummaryCardWidget extends StatelessWidget {
             ),
           ),
         ),
-        SvgPicture.asset(AppAssets.iconPlay, width: 32, height: 32),
+        Obx(
+          () => InkWell(
+            onTap: () => controller.toggleCounting(),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: controller.isCounting
+                  ? const Icon(
+                      Icons.pause,
+                      color: AppColors.textPrimary,
+                      size: 32,
+                    )
+                  : SvgPicture.asset(AppAssets.iconPlay, width: 32, height: 32),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -96,7 +111,7 @@ class ActivitySummaryCardWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Obx(
           () => Text(
-            '${controller.activityData.calories}',
+            controller.activityData.calories.toStringAsFixed(1),
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -120,7 +135,7 @@ class ActivitySummaryCardWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Obx(
           () => Text(
-            '${controller.activityData.distance}',
+            controller.activityData.distance.toStringAsFixed(1),
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -165,20 +180,26 @@ class ActivitySummaryCardWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          AppStrings.report,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+        InkWell(
+          onTap: () => Get.toNamed('/report'),
+          child: Text(
+            AppStrings.report,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        Text(
-          AppStrings.detail,
-          style: const TextStyle(
-            color: AppColors.buttonOrange,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+        InkWell(
+          onTap: () => Get.toNamed('/report'),
+          child: Text(
+            AppStrings.detail,
+            style: const TextStyle(
+              color: AppColors.buttonOrange,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
