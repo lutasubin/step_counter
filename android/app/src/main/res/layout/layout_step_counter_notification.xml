@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="#FF111829">
+
+    <!-- Icon bước chân -->
+    <ImageView
+        android:id="@+id/icon_walk"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/step"
+        android:tint="#FF2F6AFF" />
+
+    <!-- Số bước -->
+    <TextView
+        android:id="@+id/tv_steps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/icon_walk"
+        android:layout_marginStart="8dp"
+        android:text="0"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- Icon lửa -->
+    <ImageView
+        android:id="@+id/icon_fire"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_toEndOf="@id/tv_steps"
+        android:layout_marginStart="16dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/fire"
+        android:tint="#FFF65738" />
+
+    <!-- Kcal -->
+    <TextView
+        android:id="@+id/tv_calories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/icon_fire"
+        android:layout_marginStart="4dp"
+        android:text="0.0"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14sp" />
+
+    <!-- Mũi tên bên phải -->
+    <ImageView
+        android:id="@+id/icon_arrow"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/arrow"
+        android:tint="#FF717E97" />
+
+    <!-- Thanh progress -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_below="@id/icon_walk"
+        android:layout_marginTop="12dp"
+        android:progress="0"
+        android:max="10000"
+        android:progressDrawable="@drawable/progress_step_counter" />
+
+</RelativeLayout>
+

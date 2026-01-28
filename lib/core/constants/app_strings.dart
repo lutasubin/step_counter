@@ -6,7 +6,7 @@ class AppStrings {
   static const String today = 'Today';
   static const String steps = 'Bước';
   static const String report = 'Report';
-  static const String detail = 'Detail >';
+  static const String detail = 'Detail';
 
   // Activity metrics
   static const String kcal = 'Kcal';

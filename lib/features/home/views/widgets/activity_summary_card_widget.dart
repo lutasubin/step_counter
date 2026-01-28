@@ -186,20 +186,31 @@ class ActivitySummaryCardWidget extends StatelessWidget {
             AppStrings.report,
             style: const TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 16,
+              fontSize: 18 ,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         InkWell(
           onTap: () => Get.toNamed('/report'),
-          child: Text(
-            AppStrings.detail,
-            style: const TextStyle(
-              color: AppColors.buttonOrange,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppStrings.detail,
+                style: const TextStyle(
+                  color: AppColors.buttonOrange,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: AppColors.buttonOrange,
+              ),
+            ],
           ),
         ),
       ],

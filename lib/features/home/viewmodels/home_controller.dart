@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:step_counter/core/di/di_setup.dart';
+import 'package:step_counter/core/services/notification_service.dart';
 import 'package:step_counter/features/home/model/activity_data_model.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/report/model/daily_activity_model.dart';
@@ -10,15 +12,18 @@ import 'package:step_counter/features/report/service/report_service.dart';
 class HomeController extends GetxController {
   final StepCounterService _stepCounterService;
   final ReportService _reportService;
+  final NotificationService _notificationService;
   final _activityData = ActivityDataModel.empty().obs;
   final _isCounting = false.obs;
   final _elapsedSeconds = 0.obs;
 
   StreamSubscription<int>? _stepSubscription;
   Timer? _timer;
+  static const String _isCountingKey = 'home_is_counting';
 
   HomeController(this._stepCounterService)
-    : _reportService = getIt<ReportService>();
+    : _reportService = getIt<ReportService>(),
+      _notificationService = getIt<NotificationService>();
 
   /// Dữ liệu hoạt động
   ActivityDataModel get activityData => _activityData.value;
@@ -40,8 +45,14 @@ class HomeController extends GetxController {
   }
 
   /// Load dữ liệu ban đầu
-  void _loadData() {
-    // Load data từ local storage nếu có
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isCountingSaved = prefs.getBool(_isCountingKey) ?? false;
+
+    // Nếu trước khi tắt app đang đếm thì tự động đếm lại
+    if (isCountingSaved && !_isCounting.value) {
+      await startCounting();
+    }
   }
 
   /// Bắt đầu đếm bước
@@ -71,6 +82,16 @@ class HomeController extends GetxController {
     _stepSubscription = _stepCounterService.getStepStream().listen((steps) {
       _updateActivityData(steps);
     });
+
+    // Lưu trạng thái đang đếm để lần sau mở app tự resume
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isCountingKey, true);
+
+    // Hiển thị notification khi bắt đầu đếm
+    await _notificationService.showCountingNotification(
+      steps: 0,
+      calories: 0.0,
+    );
   }
 
   /// Dừng đếm bước
@@ -80,6 +101,13 @@ class HomeController extends GetxController {
     _isCounting.value = false;
     _stepSubscription?.cancel();
     _timer?.cancel();
+
+    // Lưu lại trạng thái đã dừng
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isCountingKey, false);
+
+    // Ẩn notification khi dừng đếm
+    await _notificationService.hideCountingNotification();
 
     // Lưu dữ liệu vào report
     await _saveActivityData();
@@ -138,6 +166,14 @@ class HomeController extends GetxController {
       distance: distance,
       duration: duration,
     );
+
+    // Cập nhật notification với dữ liệu mới
+    if (_isCounting.value) {
+      _notificationService.updateCountingNotification(
+        steps: steps,
+        calories: calories,
+      );
+    }
   }
 
   /// Cập nhật thời gian

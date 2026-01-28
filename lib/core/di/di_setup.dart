@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:step_counter/core/services/notification_service.dart';
 import 'package:step_counter/features/home/repositories/step_counter_repository.dart';
 import 'package:step_counter/features/home/repositories/step_counter_repository_impl.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
@@ -24,6 +25,9 @@ void setupDI() {
   );
 
   // Đăng ký services
+  getIt.registerLazySingleton<NotificationService>(
+    () => NotificationService(),
+  );
   getIt.registerLazySingleton<SplashService>(
     () => SplashService(getIt<SplashRepository>()),
   );

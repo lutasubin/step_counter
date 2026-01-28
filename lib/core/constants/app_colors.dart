@@ -25,6 +25,6 @@ class AppColors {
   static const Color buttonBlue = Color(0xFF2F6AFF);
 
   // Màu text
-  static const Color textPrimary = Colors.white;
+  static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0xFF717E97);
 }

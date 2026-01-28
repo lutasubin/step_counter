@@ -19,7 +19,7 @@ class ReportChartWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: AppColors.homeBackground,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Obx(() {
@@ -66,15 +66,15 @@ class ReportChartWidget extends StatelessWidget {
             horizontalInterval: 500,
             verticalInterval: 1,
             getDrawingHorizontalLine: (value) {
-              return FlLine(
-                color: AppColors.metricsBackground.withOpacity(0.3),
+              return const FlLine(
+                color: AppColors.loadingBarInactive, // #253047
                 strokeWidth: 1,
                 dashArray: [5, 5],
               );
             },
             getDrawingVerticalLine: (value) {
-              return FlLine(
-                color: AppColors.metricsBackground.withOpacity(0.3),
+              return const FlLine(
+                color: AppColors.loadingBarInactive, // #253047
                 strokeWidth: 1,
                 dashArray: [5, 5],
               );
@@ -92,6 +92,7 @@ class ReportChartWidget extends StatelessWidget {
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     );
                   }
@@ -125,6 +126,7 @@ class ReportChartWidget extends StatelessWidget {
                               ? AppColors.buttonOrange
                               : AppColors.textSecondary,
                           fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     );
@@ -140,12 +142,20 @@ class ReportChartWidget extends StatelessWidget {
               sideTitles: SideTitles(showTitles: false),
             ),
           ),
-          borderData: FlBorderData(show: false),
+          borderData: FlBorderData(
+            show: true,
+            border: const Border(
+              left: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+              bottom: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+              right: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+              top: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+            ),
+          ),
           lineBarsData: [
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              color: AppColors.buttonOrange,
+              color: AppColors.buttonOrange, // Đường biểu đồ màu cam
               barWidth: 3,
               dotData: FlDotData(
                 show: false, // Bỏ các chấm tròn trên đường line
@@ -162,7 +172,7 @@ class ReportChartWidget extends StatelessWidget {
                   controller.selectedIndex < controller.activities.length)
                 VerticalLine(
                   x: controller.selectedIndex.toDouble(),
-                  color: AppColors.buttonOrange,
+                  color: AppColors.buttonOrange, // Đường dọc chọn điểm màu cam
                   strokeWidth: 2,
                   label: VerticalLineLabel(show: false),
                 ),
@@ -224,15 +234,15 @@ class ReportChartWidget extends StatelessWidget {
             horizontalInterval: horizontalInterval,
             verticalInterval: 1,
             getDrawingHorizontalLine: (value) {
-              return FlLine(
-                color: AppColors.metricsBackground.withOpacity(0.3),
+              return const FlLine(
+                color: AppColors.loadingBarInactive, // #253047
                 strokeWidth: 1,
                 dashArray: [5, 5],
               );
             },
             getDrawingVerticalLine: (value) {
-              return FlLine(
-                color: AppColors.metricsBackground.withOpacity(0.3),
+              return const FlLine(
+                color: AppColors.loadingBarInactive, // #253047
                 strokeWidth: 1,
                 dashArray: [5, 5],
               );
@@ -251,6 +261,7 @@ class ReportChartWidget extends StatelessWidget {
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     );
                   }
@@ -276,6 +287,7 @@ class ReportChartWidget extends StatelessWidget {
                               ? AppColors.buttonOrange
                               : AppColors.textSecondary,
                           fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     );
@@ -291,12 +303,20 @@ class ReportChartWidget extends StatelessWidget {
               sideTitles: SideTitles(showTitles: false),
             ),
           ),
-          borderData: FlBorderData(show: false),
+          borderData: FlBorderData(
+            show: true,
+            border: const Border(
+              left: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+              bottom: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+              right: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+              top: BorderSide(color: AppColors.loadingBarInactive, width: 1),
+            ),
+          ),
           lineBarsData: [
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              color: AppColors.buttonOrange,
+              color: AppColors.buttonOrange, // Đường biểu đồ màu cam
               barWidth: 3,
               dotData: FlDotData(
                 show: false, // Bỏ các chấm tròn trên đường line
@@ -313,7 +333,7 @@ class ReportChartWidget extends StatelessWidget {
                   controller.selectedIndex < controller.activities.length)
                 VerticalLine(
                   x: controller.selectedIndex.toDouble(),
-                  color: AppColors.buttonOrange,
+                  color: AppColors.buttonOrange, // Đường dọc chọn điểm màu cam
                   strokeWidth: 2,
                   label: VerticalLineLabel(show: false),
                 ),
@@ -379,32 +399,63 @@ class ReportChartWidget extends StatelessWidget {
 
     return Positioned(
       left: leftPosition.clamp(0.0, chartWidth - 80),
-      top: topPosition.clamp(0.0, chartHeight - 60),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.buttonOrange,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '$steps',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+      top: topPosition.clamp(0.0, chartHeight - 70),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.buttonOrange,
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 2),
-            Text(
-              AppStrings.step,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$steps',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  AppStrings.step,
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 0),
+          CustomPaint(
+            size: const Size(20, 8),
+            painter: _TrianglePointerPainter(color: AppColors.buttonOrange),
+          ),
+        ],
       ),
     );
   }
+}
+
+/// Vẽ tam giác nhỏ bên dưới tooltip
+class _TrianglePointerPainter extends CustomPainter {
+  final Color color;
+
+  const _TrianglePointerPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path()
+      ..moveTo(size.width / 2, size.height) // đỉnh dưới
+      ..lineTo(0, 0) // góc trái trên
+      ..lineTo(size.width, 0) // góc phải trên
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
