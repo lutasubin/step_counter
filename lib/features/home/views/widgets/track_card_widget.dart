@@ -23,8 +23,6 @@ class TrackCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(20),
@@ -39,7 +37,7 @@ class TrackCardWidget extends StatelessWidget {
           const SizedBox(height: 12),
           _buildDescription(),
           const SizedBox(height: 16),
-          _buildButton(screenSize),
+          _buildButton(),
         ],
       ),
     );
@@ -74,32 +72,33 @@ class TrackCardWidget extends StatelessWidget {
   Widget _buildDescription() {
     return Text(
       description,
-      style: const TextStyle(
-        color: AppColors.textSecondary,
-        fontSize: 14,
-      ),
+      style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
     );
   }
 
-  /// Xây dựng button
-  Widget _buildButton(Size screenSize) {
-    return SizedBox(
-      width: screenSize.width * 0.6,
-      child: ElevatedButton(
-        onPressed: onButtonPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  /// Xây dựng button với kích thước cố định 128x40 và căn giữa
+  Widget _buildButton() {
+    return Center(
+      child: SizedBox(
+        width: 128,
+        height: 40,
+        child: ElevatedButton(
+          onPressed: onButtonPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: buttonColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 0,
+            padding: EdgeInsets.zero,
           ),
-          elevation: 0,
-        ),
-        child: Text(
-          buttonText,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          child: Text(
+            buttonText,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

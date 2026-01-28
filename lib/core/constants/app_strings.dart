@@ -33,4 +33,12 @@ class AppStrings {
   static const String tryWidgetsDesc =
       'View your steps and water intake on the home screen anytime!';
   static const String addWidget = 'Add widget';
+
+  // Setting screen
+  static const String settingTitle = 'Setting';
+  static const String language = 'Language';
+  static const String share = 'Share';
+  static const String rateUs = 'Rate us';
+  static const String termsOfUse = 'Terms of use';
+  static const String privacyPolicy = 'Privacy policy';
 }
