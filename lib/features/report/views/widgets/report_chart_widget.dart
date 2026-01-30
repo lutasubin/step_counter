@@ -54,11 +54,49 @@ class ReportChartWidget extends StatelessWidget {
       }).toList();
 
       // Kiểm tra xem có dữ liệu không (ít nhất 1 điểm có steps > 0)
-      final hasData = controller.activities.any((activity) => activity.steps > 0);
+      final hasData = controller.activities.any(
+        (activity) => activity.steps > 0,
+      );
 
-      // Y-axis: 0, 500, 1k, 1.5k, 2k, 2.5k
-      const maxY = 2500.0;
-      const yIntervals = [0, 500, 1000, 1500, 2000, 2500];
+      // Tính maxSteps từ dữ liệu thực tế
+      final maxSteps = hasData
+          ? controller.activities
+                .map((a) => a.steps)
+                .reduce((a, b) => a > b ? a : b)
+          : 0;
+
+      // Tính toán Y-axis tự động dựa trên maxSteps
+      // Nếu maxSteps <= 2500, dùng 2500 làm maxY
+      // Nếu maxSteps > 2500, tính maxY = maxSteps * 1.2 (thêm 20% padding)
+      double maxY;
+      List<int> yIntervals;
+      double horizontalInterval;
+
+      if (maxSteps <= 2500) {
+        // Trường hợp bình thường: 0, 500, 1k, 1.5k, 2k, 2.5k
+        maxY = 2500.0;
+        yIntervals = [0, 500, 1000, 1500, 2000, 2500];
+        horizontalInterval = 500.0;
+      } else {
+        // Trường hợp vượt quá 2500: tự động tính intervals
+        // Làm tròn maxSteps lên bội số của 500 gần nhất, rồi thêm 20% padding
+        final roundedMax = ((maxSteps / 500).ceil() * 500).toDouble();
+        maxY = (roundedMax * 1.2).ceil().toDouble();
+
+        // Tính số intervals (tối đa 6 intervals)
+        final intervalSize = (maxY / 5).ceil().toDouble();
+        // Làm tròn intervalSize lên bội số của 500
+        horizontalInterval = ((intervalSize / 500).ceil() * 500).toDouble();
+
+        // Tạo yIntervals: 0, interval, 2*interval, ..., maxY
+        yIntervals = [];
+        for (int i = 0; i <= 5; i++) {
+          final value = (i * horizontalInterval).round();
+          if (value <= maxY) {
+            yIntervals.add(value);
+          }
+        }
+      }
 
       return LineChart(
         LineChartData(
@@ -66,7 +104,7 @@ class ReportChartWidget extends StatelessWidget {
             show: true,
             drawVerticalLine: true,
             drawHorizontalLine: true,
-            horizontalInterval: 500,
+            horizontalInterval: horizontalInterval,
             verticalInterval: 1,
             getDrawingHorizontalLine: (value) {
               return const FlLine(
@@ -225,7 +263,9 @@ class ReportChartWidget extends StatelessWidget {
       }).toList();
 
       // Kiểm tra xem có dữ liệu không (ít nhất 1 điểm có steps > 0)
-      final hasData = controller.activities.any((activity) => activity.steps > 0);
+      final hasData = controller.activities.any(
+        (activity) => activity.steps > 0,
+      );
 
       final maxSteps = controller.activities
           .map((a) => a.steps)
@@ -428,7 +468,23 @@ class ReportChartWidget extends StatelessWidget {
     // Tính toán vị trí Y dựa trên giá trị steps
     double maxY;
     if (controller.selectedPeriod == PeriodType.day) {
-      maxY = 2500.0;
+      // Tính maxY động cho Day view (giống logic trong _buildDayChart)
+      final hasData = controller.activities.any(
+        (activity) => activity.steps > 0,
+      );
+      if (hasData) {
+        final maxSteps = controller.activities
+            .map((a) => a.steps)
+            .reduce((a, b) => a > b ? a : b);
+        if (maxSteps <= 2500) {
+          maxY = 2500.0;
+        } else {
+          final roundedMax = ((maxSteps / 500).ceil() * 500).toDouble();
+          maxY = (roundedMax * 1.2).ceil().toDouble();
+        }
+      } else {
+        maxY = 2500.0;
+      }
     } else {
       final maxSteps = controller.activities
           .map((a) => a.steps)
