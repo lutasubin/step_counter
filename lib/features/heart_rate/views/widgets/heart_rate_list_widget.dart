@@ -8,19 +8,14 @@ import 'package:step_counter/features/heart_rate/views/widgets/heart_rate_empty_
 class HeartRateListWidget extends StatelessWidget {
   final HeartRateController controller;
 
-  const HeartRateListWidget({
-    super.key,
-    required this.controller,
-  });
+  const HeartRateListWidget({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       // Hiển thị loading indicator nếu đang load
       if (controller.isLoading) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
       }
 
       // Hiển thị empty state nếu không có dữ liệu
@@ -37,13 +32,9 @@ class HeartRateListWidget extends StatelessWidget {
           // Card đầu tiên (mới nhất) luôn hiển thị như "Today"
           final isToday = index == 0;
 
-          return HeartRateCardWidget(
-            heartRate: heartRate,
-            isToday: isToday,
-          );
+          return HeartRateCardWidget(heartRate: heartRate, isToday: isToday);
         },
       );
     });
   }
-
 }
