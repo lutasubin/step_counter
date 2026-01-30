@@ -4,10 +4,12 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -23,6 +25,9 @@ class MainActivity : FlutterActivity() {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
+    private var heartRateHandler: HeartRateMeasurementHandler? = null
+    private val heartRateChannelName = "heart_rate_measurement"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
@@ -31,6 +36,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
+        // MethodChannel cho step counter notifications
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             channelName,
@@ -44,6 +50,36 @@ class MainActivity : FlutterActivity() {
                 }
                 "hideCountingNotification" -> {
                     hideCountingNotification()
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        // MethodChannel cho heart rate measurement
+        val heartRateChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            heartRateChannelName,
+        )
+        heartRateHandler = HeartRateMeasurementHandler(this, heartRateChannel)
+        
+        heartRateChannel.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "startMeasurement" -> {
+                    // Kiểm tra camera permission
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            android.Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        heartRateHandler?.startMeasurement()
+                        result.success(null)
+                    } else {
+                        result.error("PERMISSION_DENIED", "Camera permission not granted", null)
+                    }
+                }
+                "stopMeasurement" -> {
+                    heartRateHandler?.stopMeasurement()
                     result.success(null)
                 }
                 else -> result.notImplemented()

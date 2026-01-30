@@ -50,4 +50,22 @@ class AppStrings {
   static const String avgPerDay = 'Avg / day';
   static const String totalStep = 'Total step';
   static const String step = 'Step';
+
+  // Heart rate screen
+  static const String heartRate = 'Heart rate';
+
+  // Measure heart rate screen
+  static const String measureHeartRate = 'Measure heart rate';
+  static const String measuring = 'Measuring ...';
+  static const String measureInstruction =
+      'It will take about 30s-50s, please don\'t move your finger off camera';
+  static const String coverCameraInstruction =
+      'Cover the camera with your finger until ❤️ turns red';
+
+  // Heart rate result screen
+  static const String yourResultIs = 'Your result is';
+  static const String normalRange = 'Normal range: BPM 75-89';
+  static const String disclaimerText =
+      'Results are for reference only and not a substitute for medical equipment.';
+  static const String save = 'SAVE';
 }

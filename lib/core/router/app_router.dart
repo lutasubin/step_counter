@@ -1,6 +1,12 @@
 import 'package:get/get.dart';
 import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/core/di/di_setup.dart';
+import 'package:step_counter/features/heart_rate/views/heart_rate_view.dart';
+import 'package:step_counter/features/heart_rate/viewmodels/heart_rate_controller.dart';
+import 'package:step_counter/features/heart_rate/views/measure_heart_rate_view.dart';
+import 'package:step_counter/features/heart_rate/viewmodels/measure_heart_rate_controller.dart';
+import 'package:step_counter/features/heart_rate/views/heart_rate_result_view.dart';
+import 'package:step_counter/features/heart_rate/viewmodels/heart_rate_result_controller.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/home/views/home_view.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
@@ -46,6 +52,25 @@ class AppRouter {
       name: RouteNames.report,
       page: () => const ReportView(),
       binding: ReportBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: RouteNames.heartRate,
+      page: () => const HeartRateView(),
+      binding: HeartRateBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: RouteNames.measureHeartRate,
+      page: () => const MeasureHeartRateView(),
+      binding: MeasureHeartRateBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: RouteNames.heartRateResult,
+      page: () => const HeartRateResultView(),
+      binding: HeartRateResultBinding(),
+      transition: Transition.noTransition,
     ),
   ];
 }
@@ -95,5 +120,29 @@ class ReportBinding extends Bindings {
     Get.lazyPut<ReportController>(
       () => ReportController(getIt<ReportService>()),
     );
+  }
+}
+
+/// Binding cho HeartRateController - dùng lazyPut để tối ưu
+class HeartRateBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<HeartRateController>(() => HeartRateController());
+  }
+}
+
+/// Binding cho MeasureHeartRateController - dùng lazyPut để tối ưu
+class MeasureHeartRateBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<MeasureHeartRateController>(() => MeasureHeartRateController());
+  }
+}
+
+/// Binding cho HeartRateResultController - dùng lazyPut để tối ưu
+class HeartRateResultBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<HeartRateResultController>(() => HeartRateResultController());
   }
 }

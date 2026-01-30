@@ -3,6 +3,10 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <!-- Permission để hiển thị notification (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Permission để đo nhịp tim bằng camera -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
     
     <application
         android:label="Step Counter"

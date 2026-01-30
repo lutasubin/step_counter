@@ -1,5 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:step_counter/core/services/notification_service.dart';
+import 'package:step_counter/features/heart_rate/repositories/heart_rate_repository.dart';
+import 'package:step_counter/features/heart_rate/repositories/heart_rate_repository_impl.dart';
+import 'package:step_counter/features/heart_rate/service/heart_rate_measurement_service.dart';
 import 'package:step_counter/features/home/repositories/step_counter_repository.dart';
 import 'package:step_counter/features/home/repositories/step_counter_repository_impl.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
@@ -20,14 +23,13 @@ void setupDI() {
   getIt.registerLazySingleton<StepCounterRepository>(
     () => StepCounterRepositoryImpl(),
   );
-  getIt.registerLazySingleton<ReportRepository>(
-    () => ReportRepositoryImpl(),
+  getIt.registerLazySingleton<ReportRepository>(() => ReportRepositoryImpl());
+  getIt.registerLazySingleton<HeartRateRepository>(
+    () => HeartRateRepositoryImpl(),
   );
 
   // Đăng ký services
-  getIt.registerLazySingleton<NotificationService>(
-    () => NotificationService(),
-  );
+  getIt.registerLazySingleton<NotificationService>(() => NotificationService());
   getIt.registerLazySingleton<SplashService>(
     () => SplashService(getIt<SplashRepository>()),
   );
@@ -36,5 +38,8 @@ void setupDI() {
   );
   getIt.registerLazySingleton<ReportService>(
     () => ReportService(getIt<ReportRepository>()),
+  );
+  getIt.registerLazySingleton<HeartRateMeasurementService>(
+    () => HeartRateMeasurementService(),
   );
 }

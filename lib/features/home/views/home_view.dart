@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:step_counter/core/constants/app_assets.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
 import 'package:step_counter/core/constants/app_strings.dart';
+import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
 import 'package:step_counter/features/home/views/widgets/activity_summary_card_widget.dart';
 import 'package:step_counter/features/home/views/widgets/home_bottom_nav_widget.dart';
@@ -57,7 +58,9 @@ class HomeView extends StatelessWidget {
       description: AppStrings.trackHeartRateDesc,
       buttonText: AppStrings.measure,
       buttonColor: AppColors.buttonOrange,
-      onButtonPressed: () {},
+      onButtonPressed: () {
+        Get.toNamed(RouteNames.heartRate);
+      },
     );
   }
 
