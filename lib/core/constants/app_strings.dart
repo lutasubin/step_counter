@@ -68,4 +68,24 @@ class AppStrings {
   static const String disclaimerText =
       'Results are for reference only and not a substitute for medical equipment.';
   static const String save = 'SAVE';
+
+  // Blood pressure screen
+  static const String bloodPressure = 'Huyết áp';
+  static const String noRecordsAvailable = 'No records available!';
+  static const String recordBloodPressure = 'RECORD';
+  static const String newRecord = 'New record';
+  static const String systolic = 'Systolic mmHg';
+  static const String diastolic = 'Diastolic mmHg';
+  static const String pulseBMP = 'Pulse BMP';
+  static const String normalRangeBP = 'Normal range: SYS 90-119 and DIA 60-79';
+  static const String timeSetting = 'Time setting';
+  static const String done = 'DONE';
+  static const String gotIt = 'GOT IT';
+  static const String information = 'Information';
+  static const String hypotension = 'Hypotension';
+  static const String normal = 'Normal';
+  static const String elevated = 'Elevated';
+  static const String hypotensionStage1 = 'Hypotension - Stage 1';
+  static const String hypotensionStage2 = 'Hypotension - Stage 2';
+  static const String hypotensive = 'Hypotensive';
 }

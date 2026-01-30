@@ -5,9 +5,10 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelper {
   static const String _databaseName = 'step_counter.db';
   static const int _databaseVersion =
-      2; // Tăng version để thêm bảng heart_rates
+      3; // Tăng version để thêm bảng blood_pressures
   static const String _tableName = 'daily_activities';
   static const String _heartRateTableName = 'heart_rates';
+  static const String _bloodPressureTableName = 'blood_pressures';
 
   static Database? _database;
 
@@ -59,6 +60,25 @@ class DatabaseHelper {
     await db.execute('''
       CREATE INDEX idx_heart_rate_date_time ON $_heartRateTableName(date_time)
     ''');
+
+    // Tạo bảng blood_pressures
+    await db.execute('''
+      CREATE TABLE $_bloodPressureTableName (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date_time TEXT NOT NULL,
+        systolic INTEGER NOT NULL,
+        diastolic INTEGER NOT NULL,
+        pulse INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        normal_range TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    // Tạo index cho date_time
+    await db.execute('''
+      CREATE INDEX idx_blood_pressure_date_time ON $_bloodPressureTableName(date_time)
+    ''');
   }
 
   /// Upgrade database khi version thay đổi
@@ -81,6 +101,27 @@ class DatabaseHelper {
         CREATE INDEX IF NOT EXISTS idx_heart_rate_date_time ON $_heartRateTableName(date_time)
       ''');
     }
+
+    if (oldVersion < 3) {
+      // Thêm bảng blood_pressures cho version 3
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS $_bloodPressureTableName (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          date_time TEXT NOT NULL,
+          systolic INTEGER NOT NULL,
+          diastolic INTEGER NOT NULL,
+          pulse INTEGER NOT NULL,
+          status TEXT NOT NULL,
+          normal_range TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        )
+      ''');
+
+      // Tạo index
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_blood_pressure_date_time ON $_bloodPressureTableName(date_time)
+      ''');
+    }
   }
 
   /// Đóng database
@@ -91,4 +132,7 @@ class DatabaseHelper {
 
   /// Getter cho heart rate table name (để sử dụng trong repository)
   static String get heartRateTableName => _heartRateTableName;
+
+  /// Getter cho blood pressure table name (để sử dụng trong repository)
+  static String get bloodPressureTableName => _bloodPressureTableName;
 }

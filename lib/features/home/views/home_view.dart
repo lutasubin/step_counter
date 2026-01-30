@@ -72,7 +72,9 @@ class HomeView extends StatelessWidget {
       description: AppStrings.trackBloodPressureDesc,
       buttonText: AppStrings.record,
       buttonColor: AppColors.buttonTeal,
-      onButtonPressed: () {},
+      onButtonPressed: () {
+        Get.toNamed(RouteNames.bloodPressure);
+      },
     );
   }
 

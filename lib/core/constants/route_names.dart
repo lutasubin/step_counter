@@ -10,4 +10,6 @@ class RouteNames {
   static const String heartRate = '/heart-rate';
   static const String measureHeartRate = '/measure-heart-rate';
   static const String heartRateResult = '/heart-rate-result';
+  static const String bloodPressure = '/blood-pressure';
+  static const String newBloodPressure = '/new-blood-pressure';
 }

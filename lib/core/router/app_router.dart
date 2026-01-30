@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/core/di/di_setup.dart';
+import 'package:step_counter/features/blood_pressure/views/blood_pressure_view.dart';
+import 'package:step_counter/features/blood_pressure/viewmodels/blood_pressure_controller.dart';
+import 'package:step_counter/features/blood_pressure/views/new_blood_pressure_view.dart';
+import 'package:step_counter/features/blood_pressure/viewmodels/new_blood_pressure_controller.dart';
 import 'package:step_counter/features/heart_rate/views/heart_rate_view.dart';
 import 'package:step_counter/features/heart_rate/viewmodels/heart_rate_controller.dart';
 import 'package:step_counter/features/heart_rate/views/measure_heart_rate_view.dart';
@@ -70,6 +74,18 @@ class AppRouter {
       name: RouteNames.heartRateResult,
       page: () => const HeartRateResultView(),
       binding: HeartRateResultBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: RouteNames.bloodPressure,
+      page: () => const BloodPressureView(),
+      binding: BloodPressureBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: RouteNames.newBloodPressure,
+      page: () => const NewBloodPressureView(),
+      binding: NewBloodPressureBinding(),
       transition: Transition.noTransition,
     ),
   ];
@@ -144,5 +160,21 @@ class HeartRateResultBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<HeartRateResultController>(() => HeartRateResultController());
+  }
+}
+
+/// Binding cho BloodPressureController - dùng lazyPut để tối ưu
+class BloodPressureBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<BloodPressureController>(() => BloodPressureController());
+  }
+}
+
+/// Binding cho NewBloodPressureController - dùng lazyPut để tối ưu
+class NewBloodPressureBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<NewBloodPressureController>(() => NewBloodPressureController());
   }
 }
