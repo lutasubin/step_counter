@@ -28,30 +28,22 @@ class HeartRateListWidget extends StatelessWidget {
         return const HeartRateEmptyWidget();
       }
 
-      return ListView.builder(
+      return ListView.separated(
         padding: const EdgeInsets.all(20),
         itemCount: controller.heartRates.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
         itemBuilder: (context, index) {
           final heartRate = controller.heartRates[index];
-          final isToday = _isToday(heartRate.dateTime);
+          // Card đầu tiên (mới nhất) luôn hiển thị như "Today"
+          final isToday = index == 0;
 
-          return Padding(
-            padding: EdgeInsets.only(bottom: index < controller.heartRates.length - 1 ? 12 : 0),
-            child: HeartRateCardWidget(
-              heartRate: heartRate,
-              isToday: isToday,
-            ),
+          return HeartRateCardWidget(
+            heartRate: heartRate,
+            isToday: isToday,
           );
         },
       );
     });
   }
 
-  /// Kiểm tra xem có phải hôm nay không
-  bool _isToday(DateTime dateTime) {
-    final now = DateTime.now();
-    return dateTime.year == now.year &&
-        dateTime.month == now.month &&
-        dateTime.day == now.day;
-  }
 }

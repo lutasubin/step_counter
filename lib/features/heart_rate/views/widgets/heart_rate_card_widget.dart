@@ -131,6 +131,7 @@ class HeartRateCardWidget extends StatelessWidget {
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
           Text(
@@ -142,15 +143,15 @@ class HeartRateCardWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Column(
-            children: [
-              const Icon(Icons.favorite, color: Colors.red, size: 24),
-              const SizedBox(height: 4),
-              const Text(
-                'BMP',
-                style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
-              ),
-            ],
+          const Icon(Icons.favorite, color: Colors.red, size: 20),
+          const SizedBox(width: 4),
+          const Text(
+            'BMP',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
