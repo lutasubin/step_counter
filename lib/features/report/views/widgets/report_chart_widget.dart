@@ -53,6 +53,9 @@ class ReportChartWidget extends StatelessWidget {
         return FlSpot(entry.key.toDouble(), entry.value.steps.toDouble());
       }).toList();
 
+      // Kiểm tra xem có dữ liệu không (ít nhất 1 điểm có steps > 0)
+      final hasData = controller.activities.any((activity) => activity.steps > 0);
+
       // Y-axis: 0, 500, 1k, 1.5k, 2k, 2.5k
       const maxY = 2500.0;
       const yIntervals = [0, 500, 1000, 1500, 2000, 2500];
@@ -151,25 +154,43 @@ class ReportChartWidget extends StatelessWidget {
               top: BorderSide(color: AppColors.loadingBarInactive, width: 1),
             ),
           ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots,
-              isCurved: true,
-              color: AppColors.buttonOrange, // Đường biểu đồ màu cam
-              barWidth: 3,
-              dotData: FlDotData(
-                show: false, // Bỏ các chấm tròn trên đường line
-              ),
-              belowBarData: BarAreaData(show: false),
-            ),
-          ],
+          lineBarsData: hasData
+              ? [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    color: AppColors.buttonOrange, // Đường line màu cam
+                    barWidth: 3,
+                    dotData: FlDotData(
+                      show: true,
+                      // Chỉ hiển thị dot tại điểm được chọn
+                      getDotPainter: (spot, percent, barData, index) {
+                        if (controller.selectedIndex == index) {
+                          return FlDotCirclePainter(
+                            radius: 6,
+                            color: Colors.white, // Màu trắng bên trong
+                            strokeWidth: 2,
+                            strokeColor: AppColors.buttonOrange, // Viền cam
+                          );
+                        }
+                        return FlDotCirclePainter(
+                          radius: 0,
+                          color: Colors.transparent,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(show: false),
+                  ),
+                ]
+              : [], // Không có dữ liệu thì không vẽ line
           lineTouchData: LineTouchData(
             enabled: false, // Tắt touch trên line, chỉ dùng click vào X-axis
           ),
           extraLinesData: ExtraLinesData(
             verticalLines: [
               if (controller.selectedIndex >= 0 &&
-                  controller.selectedIndex < controller.activities.length)
+                  controller.selectedIndex < controller.activities.length &&
+                  hasData)
                 VerticalLine(
                   x: controller.selectedIndex.toDouble(),
                   color: AppColors.buttonOrange, // Đường dọc chọn điểm màu cam
@@ -202,6 +223,9 @@ class ReportChartWidget extends StatelessWidget {
       final spots = controller.activities.asMap().entries.map((entry) {
         return FlSpot(entry.key.toDouble(), entry.value.steps.toDouble());
       }).toList();
+
+      // Kiểm tra xem có dữ liệu không (ít nhất 1 điểm có steps > 0)
+      final hasData = controller.activities.any((activity) => activity.steps > 0);
 
       final maxSteps = controller.activities
           .map((a) => a.steps)
@@ -312,25 +336,43 @@ class ReportChartWidget extends StatelessWidget {
               top: BorderSide(color: AppColors.loadingBarInactive, width: 1),
             ),
           ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots,
-              isCurved: true,
-              color: AppColors.buttonOrange, // Đường biểu đồ màu cam
-              barWidth: 3,
-              dotData: FlDotData(
-                show: false, // Bỏ các chấm tròn trên đường line
-              ),
-              belowBarData: BarAreaData(show: false),
-            ),
-          ],
+          lineBarsData: hasData
+              ? [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    color: AppColors.buttonOrange, // Đường line màu cam
+                    barWidth: 3,
+                    dotData: FlDotData(
+                      show: true,
+                      // Chỉ hiển thị dot tại điểm được chọn
+                      getDotPainter: (spot, percent, barData, index) {
+                        if (controller.selectedIndex == index) {
+                          return FlDotCirclePainter(
+                            radius: 6,
+                            color: Colors.white, // Màu trắng bên trong
+                            strokeWidth: 2,
+                            strokeColor: AppColors.buttonOrange, // Viền cam
+                          );
+                        }
+                        return FlDotCirclePainter(
+                          radius: 0,
+                          color: Colors.transparent,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(show: false),
+                  ),
+                ]
+              : [], // Không có dữ liệu thì không vẽ line
           lineTouchData: LineTouchData(
             enabled: false, // Tắt touch trên line, chỉ dùng click vào X-axis
           ),
           extraLinesData: ExtraLinesData(
             verticalLines: [
               if (controller.selectedIndex >= 0 &&
-                  controller.selectedIndex < controller.activities.length)
+                  controller.selectedIndex < controller.activities.length &&
+                  hasData)
                 VerticalLine(
                   x: controller.selectedIndex.toDouble(),
                   color: AppColors.buttonOrange, // Đường dọc chọn điểm màu cam

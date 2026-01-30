@@ -32,11 +32,13 @@ class StepCounterRepositoryImpl implements StepCounterRepository {
 
   @override
   Stream<int> getStepStream() async* {
-    if (!_isInitialized) {
-      await _initializePedometer();
-    }
-
     await for (final stepCount in Pedometer.stepCountStream) {
+      // Khởi tạo _initialSteps ngay tại lần event đầu tiên để không bỏ lỡ bước
+      if (!_isInitialized) {
+        _initialSteps = stepCount.steps;
+        _isInitialized = true;
+      }
+
       final currentSteps = stepCount.steps;
       final steps = currentSteps - _initialSteps;
       yield steps > 0 ? steps : 0;

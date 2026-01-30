@@ -124,12 +124,10 @@ class ReportController extends GetxController {
         break;
       case PeriodType.week:
         final weekStart = _getWeekStart(_currentDate.value);
-        _activities.value = await _reportService.getActivitiesByWeek(weekStart);
+        _activities.value = await _generateWeekData(weekStart);
         break;
       case PeriodType.month:
-        _activities.value = await _reportService.getActivitiesByMonth(
-          _currentDate.value,
-        );
+        _activities.value = await _generateMonthData(_currentDate.value);
         break;
     }
     if (_selectedPeriod.value == PeriodType.day) {
@@ -175,6 +173,70 @@ class ReportController extends GetxController {
         distance: steps * 0.0008,
         durationSeconds: duration,
       );
+    });
+  }
+
+  /// Tạo đủ 7 ngày cho Week view (kể cả ngày không có dữ liệu -> 0 step)
+  Future<List<DailyActivityModel>> _generateWeekData(
+    DateTime weekStart,
+  ) async {
+    final rawActivities = await _reportService.getActivitiesByWeek(weekStart);
+
+    return List.generate(7, (index) {
+      final date = DateTime(
+        weekStart.year,
+        weekStart.month,
+        weekStart.day + index,
+      );
+
+      final existing = rawActivities.firstWhere(
+        (a) =>
+            a.date.year == date.year &&
+            a.date.month == date.month &&
+            a.date.day == date.day,
+        orElse: () => DailyActivityModel(
+          date: date,
+          steps: 0,
+          calories: 0,
+          distance: 0,
+          durationSeconds: 0,
+        ),
+      );
+
+      return existing;
+    });
+  }
+
+  /// Tạo đủ số ngày trong tháng cho Month view (ngày không có dữ liệu -> 0 step)
+  Future<List<DailyActivityModel>> _generateMonthData(
+    DateTime monthDate,
+  ) async {
+    final rawActivities = await _reportService.getActivitiesByMonth(monthDate);
+    final year = monthDate.year;
+    final month = monthDate.month;
+
+    // Lấy số ngày trong tháng: ngày 0 của tháng sau chính là ngày cuối tháng hiện tại
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+
+    return List.generate(daysInMonth, (index) {
+      final day = index + 1;
+      final date = DateTime(year, month, day);
+
+      final existing = rawActivities.firstWhere(
+        (a) =>
+            a.date.year == date.year &&
+            a.date.month == date.month &&
+            a.date.day == date.day,
+        orElse: () => DailyActivityModel(
+          date: date,
+          steps: 0,
+          calories: 0,
+          distance: 0,
+          durationSeconds: 0,
+        ),
+      );
+
+      return existing;
     });
   }
 

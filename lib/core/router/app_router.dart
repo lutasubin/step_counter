@@ -70,9 +70,13 @@ class WelcomeBinding extends Bindings {
 class HomeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<HomeController>(
-      () => HomeController(getIt<StepCounterService>()),
-    );
+    // Giữ HomeController sống xuyên suốt vòng đời app để đếm bước không bị dừng
+    if (!Get.isRegistered<HomeController>()) {
+      Get.put<HomeController>(
+        HomeController(getIt<StepCounterService>()),
+        permanent: true,
+      );
+    }
   }
 }
 
