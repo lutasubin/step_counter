@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:step_counter/core/di/di_setup.dart';
@@ -9,7 +10,7 @@ import 'package:step_counter/features/report/model/daily_activity_model.dart';
 import 'package:step_counter/features/report/service/report_service.dart';
 
 /// Controller quản lý logic của home screen
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   final StepCounterService _stepCounterService;
   final ReportService _reportService;
   final NotificationService _notificationService;
@@ -21,9 +22,14 @@ class HomeController extends GetxController {
   Timer? _timer;
   Timer? _stepPollingTimer;
   int _lastPolledSteps = 0;
+  DateTime? _startTime; // Thời điểm bắt đầu đếm
+  int _accumulatedDurationSeconds =
+      0; // Thời gian đã tích lũy từ các lần đếm trước
   static const String _isCountingKey = 'home_is_counting';
   static const String _savedElapsedSecondsKey = 'home_saved_elapsed_seconds';
   static const String _savedStepsKey = 'home_saved_steps';
+  static const String _startTimeKey =
+      'home_start_time'; // Lưu timestamp bắt đầu
 
   HomeController(this._stepCounterService)
     : _reportService = getIt<ReportService>(),
@@ -38,15 +44,40 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _loadData();
   }
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _stepSubscription?.cancel();
     _timer?.cancel();
     _stepPollingTimer?.cancel();
     super.onClose();
+  }
+
+  /// Xử lý khi app lifecycle thay đổi (foreground/background)
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (!_isCounting.value) return;
+
+    if (state == AppLifecycleState.resumed) {
+      // App quay lại foreground - tính lại thời gian dựa trên startTime
+      _recalculateElapsedTime();
+    }
+    // Không cần xử lý khi app vào background vì thời gian vẫn được tính dựa trên timestamp
+  }
+
+  /// Tính lại thời gian đã trôi qua dựa trên startTime
+  void _recalculateElapsedTime() {
+    if (_startTime == null) return;
+
+    final now = DateTime.now();
+    final elapsedSinceStart = now.difference(_startTime!).inSeconds;
+    _elapsedSeconds.value = _accumulatedDurationSeconds + elapsedSinceStart;
+    _updateDuration();
   }
 
   /// Load dữ liệu ban đầu
@@ -82,8 +113,27 @@ class HomeController extends GetxController {
 
     _isCounting.value = true;
 
-    // Khôi phục thời gian đã tích lũy
-    _elapsedSeconds.value = accumulatedDuration;
+    // Lưu thời gian đã tích lũy từ các lần đếm trước
+    _accumulatedDurationSeconds = accumulatedDuration;
+
+    // Kiểm tra xem có startTime đã lưu từ lần trước không
+    final prefs = await SharedPreferences.getInstance();
+    final savedStartTimeMillis = prefs.getInt(_startTimeKey);
+
+    if (savedStartTimeMillis != null) {
+      // Có startTime đã lưu - tiếp tục từ đó
+      _startTime = DateTime.fromMillisecondsSinceEpoch(savedStartTimeMillis);
+      // Tính lại thời gian đã trôi qua từ startTime đến bây giờ
+      final now = DateTime.now();
+      final elapsedSinceStart = now.difference(_startTime!).inSeconds;
+      _elapsedSeconds.value = _accumulatedDurationSeconds + elapsedSinceStart;
+    } else {
+      // Không có startTime - bắt đầu mới
+      _startTime = DateTime.now();
+      _elapsedSeconds.value = _accumulatedDurationSeconds;
+      // Lưu startTime
+      await prefs.setInt(_startTimeKey, _startTime!.millisecondsSinceEpoch);
+    }
 
     // Luôn reset số bước ban đầu để stream tính từ 0
     // Sau đó cộng dồn với số bước đã tích lũy
@@ -97,10 +147,15 @@ class HomeController extends GetxController {
       duration: _stepCounterService.formatDuration(accumulatedDuration),
     );
 
-    // Bắt đầu timer (tiếp tục từ thời gian đã tích lũy)
+    // Bắt đầu timer để cập nhật UI mỗi giây
+    // Thời gian thực tế được tính dựa trên timestamp, không phải đếm giây
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _elapsedSeconds.value++;
-      _updateDuration();
+      if (!_isCounting.value) {
+        timer.cancel();
+        return;
+      }
+      // Tính lại thời gian dựa trên startTime để đảm bảo chính xác
+      _recalculateElapsedTime();
     });
 
     // Lắng nghe step stream và cộng dồn với số bước đã tích lũy
@@ -148,7 +203,6 @@ class HomeController extends GetxController {
     });
 
     // Lưu trạng thái đang đếm để lần sau mở app tự resume
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isCountingKey, true);
 
     // Hiển thị notification với dữ liệu đã tích lũy
@@ -167,6 +221,9 @@ class HomeController extends GetxController {
     _timer?.cancel();
     _stepPollingTimer?.cancel();
 
+    // Tính lại thời gian cuối cùng trước khi lưu
+    _recalculateElapsedTime();
+
     // Lưu dữ liệu vào report trước
     await _saveActivityData();
 
@@ -174,9 +231,16 @@ class HomeController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isCountingKey, false);
 
+    // Xóa startTime vì đã dừng đếm
+    await prefs.remove(_startTimeKey);
+
     // Lưu số bước và thời gian hiện tại để lần sau play lại tiếp tục
     await prefs.setInt(_savedElapsedSecondsKey, _elapsedSeconds.value);
     await prefs.setInt(_savedStepsKey, _activityData.value.stepCount);
+
+    // Reset startTime
+    _startTime = null;
+    _accumulatedDurationSeconds = 0;
 
     // Ẩn notification khi dừng đếm
     await _notificationService.hideCountingNotification();
@@ -190,7 +254,8 @@ class HomeController extends GetxController {
     // Sử dụng số bước hiện tại từ activityData (đã được cộng dồn)
     final stepsToSave = _activityData.value.stepCount;
 
-    // Sử dụng duration hiện tại (đã được cộng dồn trong startCounting)
+    // Tính lại thời gian trước khi lưu để đảm bảo chính xác
+    _recalculateElapsedTime();
     final totalDuration = _elapsedSeconds.value;
 
     final activity = DailyActivityModel(

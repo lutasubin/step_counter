@@ -23,7 +23,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
 
-        // 🔥 BẮT BUỘC cho flutter_local_notifications >= 20
+        // BẮT BUỘC cho flutter_local_notifications >= 20
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    // 🔥 BẮT BUỘC cho desugaring (java.time, Optional, …)
+    // BẮT BUỘC cho desugaring (java.time, Optional, …)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 

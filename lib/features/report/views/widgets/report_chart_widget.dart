@@ -144,7 +144,8 @@ class ReportChartWidget extends StatelessWidget {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 30,
+                reservedSize:
+                    50, // Tăng reservedSize để có nhiều không gian hơn
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
                   if (index >= 0 && index < 6) {
@@ -156,18 +157,25 @@ class ReportChartWidget extends StatelessWidget {
                       '16-20',
                       '20-24',
                     ];
-                    return InkWell(
+                    return GestureDetector(
                       onTap: () {
                         controller.setSelectedIndex(index);
                       },
-                      child: Text(
-                        labels[index],
-                        style: TextStyle(
-                          color: controller.selectedIndex == index
-                              ? AppColors.buttonOrange
-                              : AppColors.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                      behavior: HitTestBehavior.opaque, // Tăng vùng click
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ), // Tăng padding để dễ click hơn
+                        child: Text(
+                          labels[index],
+                          style: TextStyle(
+                            color: controller.selectedIndex == index
+                                ? AppColors.buttonOrange
+                                : AppColors.textSecondary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     );
@@ -222,7 +230,34 @@ class ReportChartWidget extends StatelessWidget {
                 ]
               : [], // Không có dữ liệu thì không vẽ line
           lineTouchData: LineTouchData(
-            enabled: false, // Tắt touch trên line, chỉ dùng click vào X-axis
+            enabled: true, // Bật touch để có thể drag đường line
+            touchTooltipData: LineTouchTooltipData(
+              // Ẩn tooltip mặc định, dùng custom tooltip
+              getTooltipColor: (touchedSpot) => Colors.transparent,
+            ),
+            touchCallback:
+                (FlTouchEvent event, LineTouchResponse? touchResponse) {
+                  // Khi user touch/drag trên biểu đồ, cập nhật selectedIndex
+                  if (touchResponse != null &&
+                      touchResponse.lineBarSpots != null &&
+                      touchResponse.lineBarSpots!.isNotEmpty) {
+                    final spot = touchResponse.lineBarSpots!.first;
+                    final spotX = spot.x.toInt();
+                    if (spotX >= 0 && spotX < controller.activities.length) {
+                      controller.setSelectedIndex(spotX);
+                    }
+                  }
+                },
+            getTouchedSpotIndicator:
+                (LineChartBarData barData, List<int> indicators) {
+                  // Ẩn indicator mặc định
+                  return indicators.map((index) {
+                    return const TouchedSpotIndicatorData(
+                      FlLine(color: Colors.transparent),
+                      FlDotData(show: false),
+                    );
+                  }).toList();
+                },
           ),
           extraLinesData: ExtraLinesData(
             verticalLines: [
@@ -258,18 +293,39 @@ class ReportChartWidget extends StatelessWidget {
         );
       }
 
-      final spots = controller.activities.asMap().entries.map((entry) {
-        return FlSpot(entry.key.toDouble(), entry.value.steps.toDouble());
-      }).toList();
+      // Month view: Tạo spots chỉ cho những ngày có step > 0
+      // Nhưng vẫn giữ index gốc để đảm bảo tooltip và dot hoạt động đúng
+      List<FlSpot> spots;
+      if (controller.selectedPeriod == PeriodType.month) {
+        // Tạo spots chỉ cho những ngày có step > 0, nhưng giữ index gốc
+        spots = controller.activities
+            .asMap()
+            .entries
+            .where((entry) => entry.value.steps > 0)
+            .map((entry) {
+              // Giữ nguyên index gốc (entry.key) để tooltip và dot hoạt động đúng
+              return FlSpot(entry.key.toDouble(), entry.value.steps.toDouble());
+            })
+            .toList();
+      } else {
+        // Week view: Tạo spots cho tất cả
+        spots = controller.activities.asMap().entries.map((entry) {
+          return FlSpot(entry.key.toDouble(), entry.value.steps.toDouble());
+        }).toList();
+      }
 
       // Kiểm tra xem có dữ liệu không (ít nhất 1 điểm có steps > 0)
       final hasData = controller.activities.any(
         (activity) => activity.steps > 0,
       );
 
-      final maxSteps = controller.activities
-          .map((a) => a.steps)
-          .reduce((a, b) => a > b ? a : b);
+      // Tính maxSteps chỉ từ những ngày có step > 0
+      final maxSteps = hasData
+          ? controller.activities
+                .where((a) => a.steps > 0)
+                .map((a) => a.steps)
+                .reduce((a, b) => a > b ? a : b)
+          : 0;
 
       // Tính toán Y-axis intervals dựa trên maxSteps
       // Cho Week view: 0, 2.5k, 5k, 7.5k, 10k, 15k hoặc tự động
@@ -336,22 +392,71 @@ class ReportChartWidget extends StatelessWidget {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 30,
+                reservedSize:
+                    40, // Tăng reservedSize để có nhiều không gian hơn
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
                   if (index < controller.activities.length) {
-                    return InkWell(
+                    final activity = controller.activities[index];
+                    final day = activity.date.day;
+
+                    // Month view: chỉ hiển thị label cho mốc 1, 15, 31 và các ngày có step > 0
+                    if (controller.selectedPeriod == PeriodType.month) {
+                      final month = activity.date.month;
+                      final year = activity.date.year;
+                      final daysInMonth = DateTime(year, month + 1, 0).day;
+                      final isMilestone =
+                          day == 1 || day == 15 || day == daysInMonth;
+                      final hasSteps = activity.steps > 0;
+
+                      // Chỉ hiển thị label nếu là mốc hoặc có step
+                      if (isMilestone || hasSteps) {
+                        return GestureDetector(
+                          onTap: () {
+                            controller.setSelectedIndex(index);
+                          },
+                          behavior: HitTestBehavior.opaque, // Tăng vùng click
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 8,
+                            ), // Tăng padding để dễ click hơn
+                            child: Text(
+                              _getXAxisLabel(index),
+                              style: TextStyle(
+                                color: controller.selectedIndex == index
+                                    ? AppColors.buttonOrange
+                                    : AppColors.textSecondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const Text('');
+                    }
+
+                    // Week view: hiển thị tất cả
+                    return GestureDetector(
                       onTap: () {
                         controller.setSelectedIndex(index);
                       },
-                      child: Text(
-                        _getXAxisLabel(index),
-                        style: TextStyle(
-                          color: controller.selectedIndex == index
-                              ? AppColors.buttonOrange
-                              : AppColors.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                      behavior: HitTestBehavior.opaque, // Tăng vùng click
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ), // Tăng padding để dễ click hơn
+                        child: Text(
+                          _getXAxisLabel(index),
+                          style: TextStyle(
+                            color: controller.selectedIndex == index
+                                ? AppColors.buttonOrange
+                                : AppColors.textSecondary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     );
@@ -379,15 +484,39 @@ class ReportChartWidget extends StatelessWidget {
           lineBarsData: hasData
               ? [
                   LineChartBarData(
+                    // Spots đã được filter ở trên (Month view chỉ có ngày có step > 0)
                     spots: spots,
                     isCurved: true,
                     color: AppColors.buttonOrange, // Đường line màu cam
                     barWidth: 3,
                     dotData: FlDotData(
                       show: true,
-                      // Chỉ hiển thị dot tại điểm được chọn
+                      // Chỉ hiển thị dot tại điểm được chọn và có step > 0
                       getDotPainter: (spot, percent, barData, index) {
-                        if (controller.selectedIndex == index) {
+                        // Month view: spot.x là index gốc trong activities
+                        if (controller.selectedPeriod == PeriodType.month) {
+                          final spotX = spot.x.toInt();
+                          if (spotX < controller.activities.length &&
+                              controller.activities[spotX].steps > 0 &&
+                              controller.selectedIndex == spotX) {
+                            return FlDotCirclePainter(
+                              radius: 6,
+                              color: Colors.white, // Màu trắng bên trong
+                              strokeWidth: 2,
+                              strokeColor: AppColors.buttonOrange, // Viền cam
+                            );
+                          }
+                          return FlDotCirclePainter(
+                            radius: 0,
+                            color: Colors.transparent,
+                          );
+                        }
+
+                        // Week view: hiển thị dot khi được chọn
+                        // index trong getDotPainter là index trong spots array, cần map lại
+                        final spotX = spot.x.toInt();
+                        if (spotX < controller.activities.length &&
+                            controller.selectedIndex == spotX) {
                           return FlDotCirclePainter(
                             radius: 6,
                             color: Colors.white, // Màu trắng bên trong
@@ -406,7 +535,34 @@ class ReportChartWidget extends StatelessWidget {
                 ]
               : [], // Không có dữ liệu thì không vẽ line
           lineTouchData: LineTouchData(
-            enabled: false, // Tắt touch trên line, chỉ dùng click vào X-axis
+            enabled: true, // Bật touch để có thể drag đường line
+            touchTooltipData: LineTouchTooltipData(
+              // Ẩn tooltip mặc định, dùng custom tooltip
+              getTooltipColor: (touchedSpot) => Colors.transparent,
+            ),
+            touchCallback:
+                (FlTouchEvent event, LineTouchResponse? touchResponse) {
+                  // Khi user touch/drag trên biểu đồ, cập nhật selectedIndex
+                  if (touchResponse != null &&
+                      touchResponse.lineBarSpots != null &&
+                      touchResponse.lineBarSpots!.isNotEmpty) {
+                    final spot = touchResponse.lineBarSpots!.first;
+                    final spotX = spot.x.toInt();
+                    if (spotX >= 0 && spotX < controller.activities.length) {
+                      controller.setSelectedIndex(spotX);
+                    }
+                  }
+                },
+            getTouchedSpotIndicator:
+                (LineChartBarData barData, List<int> indicators) {
+                  // Ẩn indicator mặc định
+                  return indicators.map((index) {
+                    return const TouchedSpotIndicatorData(
+                      FlLine(color: Colors.transparent),
+                      FlDotData(show: false),
+                    );
+                  }).toList();
+                },
           ),
           extraLinesData: ExtraLinesData(
             verticalLines: [
@@ -444,13 +600,26 @@ class ReportChartWidget extends StatelessWidget {
       case PeriodType.week:
         return DateFormat('E', 'en_US').format(date).substring(0, 1);
       case PeriodType.month:
-        // Month view: hiển thị "Jan 20", "Jan 21", etc.
-        // Nếu là ngày đầu tiên của tháng, hiển thị "Jan" (tháng)
-        if (index == 0) {
-          return DateFormat('MMM', 'en_US').format(date);
+        // Month view: luôn hiển thị mốc 1, 15, 31
+        final day = date.day;
+        if (day == 1) {
+          // Ngày đầu tháng: hiển thị "1" hoặc "MMM 1"
+          return '1';
+        } else if (day == 15) {
+          // Ngày giữa tháng: hiển thị "15"
+          return '15';
+        } else if (day >= 28 && day <= 31) {
+          // Ngày cuối tháng: hiển thị số ngày (28/29/30/31)
+          // Kiểm tra xem có phải là ngày cuối tháng không
+          final month = date.month;
+          final year = date.year;
+          final daysInMonth = DateTime(year, month + 1, 0).day;
+          if (day == daysInMonth) {
+            return day.toString();
+          }
         }
-        // Các ngày khác hiển thị "MMM dd"
-        return DateFormat('MMM dd', 'en_US').format(date);
+        // Các ngày khác có step: hiển thị số ngày
+        return day.toString();
     }
   }
 

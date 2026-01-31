@@ -130,16 +130,9 @@ class ReportController extends GetxController {
         _activities.value = await _generateMonthData(_currentDate.value);
         break;
     }
-    if (_selectedPeriod.value == PeriodType.day) {
-      // Mặc định chọn điểm cuối cùng (16-20) hoặc điểm có giá trị cao nhất
-      _selectedIndex.value = _activities.isNotEmpty
-          ? _activities.length - 1
-          : 0;
-    } else {
-      _selectedIndex.value = _activities.isNotEmpty
-          ? _activities.length - 1
-          : 0;
-    }
+    // Reset selectedIndex về 0 khi load dữ liệu mới
+    // Tránh index out of range khi chuyển period hoặc khi activities thay đổi
+    _selectedIndex.value = 0;
   }
 
   /// Tạo dữ liệu theo 6 khoảng 4 giờ cho Day view
@@ -177,9 +170,7 @@ class ReportController extends GetxController {
   }
 
   /// Tạo đủ 7 ngày cho Week view (kể cả ngày không có dữ liệu -> 0 step)
-  Future<List<DailyActivityModel>> _generateWeekData(
-    DateTime weekStart,
-  ) async {
+  Future<List<DailyActivityModel>> _generateWeekData(DateTime weekStart) async {
     final rawActivities = await _reportService.getActivitiesByWeek(weekStart);
 
     return List.generate(7, (index) {
@@ -207,7 +198,8 @@ class ReportController extends GetxController {
     });
   }
 
-  /// Tạo đủ số ngày trong tháng cho Month view (ngày không có dữ liệu -> 0 step)
+  /// Tạo dữ liệu tháng: chỉ lấy những ngày có step > 0
+  /// Nhưng vẫn đảm bảo có các mốc 1, 15, 31 trên trục X
   Future<List<DailyActivityModel>> _generateMonthData(
     DateTime monthDate,
   ) async {
@@ -215,35 +207,130 @@ class ReportController extends GetxController {
     final year = monthDate.year;
     final month = monthDate.month;
 
-    // Lấy số ngày trong tháng: ngày 0 của tháng sau chính là ngày cuối tháng hiện tại
+    // Lấy số ngày trong tháng
     final daysInMonth = DateTime(year, month + 1, 0).day;
 
-    return List.generate(daysInMonth, (index) {
-      final day = index + 1;
-      final date = DateTime(year, month, day);
+    // Debug: In ra tất cả rawActivities
+    print(
+      'ReportController: _generateMonthData - Raw activities count: ${rawActivities.length}',
+    );
+    for (final activity in rawActivities) {
+      print('  Day ${activity.date.day}: ${activity.steps} steps');
+    }
 
-      final existing = rawActivities.firstWhere(
-        (a) =>
-            a.date.year == date.year &&
-            a.date.month == date.month &&
-            a.date.day == date.day,
-        orElse: () => DailyActivityModel(
-          date: date,
-          steps: 0,
-          calories: 0,
-          distance: 0,
-          durationSeconds: 0,
-        ),
+    // Tạo map để dễ tìm kiếm theo ngày (bao gồm cả ngày có step = 0)
+    final activitiesMap = <int, DailyActivityModel>{};
+    for (final activity in rawActivities) {
+      // Normalize date để đảm bảo so sánh đúng
+      final normalizedDate = DateTime(
+        activity.date.year,
+        activity.date.month,
+        activity.date.day,
       );
+      activitiesMap[normalizedDate.day] = activity;
+    }
 
-      return existing;
-    });
+    // Lọc chỉ lấy những ngày có step > 0
+    final activitiesWithSteps = rawActivities
+        .where((a) => a.steps > 0)
+        .toList();
+
+    print(
+      'ReportController: Activities with steps > 0: ${activitiesWithSteps.length}',
+    );
+    for (final activity in activitiesWithSteps) {
+      print('  Day ${activity.date.day}: ${activity.steps} steps');
+    }
+
+    // Tạo danh sách các mốc cần hiển thị: 1, 15, và ngày cuối tháng (28/29/30/31)
+    final milestoneDays = <int>[1, 15];
+    final lastDay = daysInMonth; // Ngày cuối tháng
+    milestoneDays.add(lastDay);
+
+    // Tạo danh sách kết quả: gồm các mốc và các ngày có step
+    final result = <DailyActivityModel>[];
+    final addedDays = <int>{};
+
+    // Thêm các mốc (1, 15, cuối tháng) - nếu có step thì dùng dữ liệu thật, không có thì tạo với 0
+    for (final day in milestoneDays) {
+      if (day <= daysInMonth) {
+        final date = DateTime(year, month, day);
+        if (activitiesMap.containsKey(day)) {
+          // Mốc có dữ liệu (có thể step > 0 hoặc = 0), dùng dữ liệu thật
+          result.add(activitiesMap[day]!);
+          print(
+            'ReportController: Added milestone day $day with ${activitiesMap[day]!.steps} steps',
+          );
+        } else {
+          // Mốc không có dữ liệu, tạo với 0 để hiển thị trên trục X
+          result.add(
+            DailyActivityModel(
+              date: date,
+              steps: 0,
+              calories: 0,
+              distance: 0,
+              durationSeconds: 0,
+            ),
+          );
+          print(
+            'ReportController: Added milestone day $day with 0 steps (no data)',
+          );
+        }
+        addedDays.add(day);
+      }
+    }
+
+    // Thêm các ngày có step còn lại (không phải mốc)
+    // Sắp xếp theo ngày để đảm bảo thứ tự
+    final sortedActivities = List<DailyActivityModel>.from(activitiesWithSteps)
+      ..sort((a, b) => a.date.day.compareTo(b.date.day));
+
+    for (final activity in sortedActivities) {
+      final day = activity.date.day;
+      if (!addedDays.contains(day)) {
+        result.add(activity);
+        addedDays.add(day);
+        print('ReportController: Added day $day with ${activity.steps} steps');
+      } else {
+        print('ReportController: Day $day already added as milestone');
+      }
+    }
+
+    // Sắp xếp theo ngày
+    result.sort((a, b) => a.date.day.compareTo(b.date.day));
+
+    print('ReportController: Final result count: ${result.length}');
+    for (final activity in result) {
+      print('  Day ${activity.date.day}: ${activity.steps} steps');
+    }
+
+    return result;
   }
 
   /// Chuyển period
   void changePeriod(PeriodType period) {
-    _selectedPeriod.value = period;
-    _loadActivities();
+    // Chỉ chuyển nếu period khác với period hiện tại
+    if (_selectedPeriod.value != period) {
+      _selectedPeriod.value = period;
+      // Reset selectedIndex trước khi load để tránh index out of range
+      _selectedIndex.value = 0;
+      // Normalize _currentDate về ngày hiện tại khi chuyển period
+      // Để tránh nhảy sang tuần/ngày khác
+      final now = DateTime.now();
+      switch (period) {
+        case PeriodType.day:
+          _currentDate.value = DateTime(now.year, now.month, now.day);
+          break;
+        case PeriodType.week:
+          // Giữ nguyên ngày hiện tại, _getWeekStart sẽ tính tuần chứa ngày này
+          _currentDate.value = DateTime(now.year, now.month, now.day);
+          break;
+        case PeriodType.month:
+          _currentDate.value = DateTime(now.year, now.month);
+          break;
+      }
+      _loadActivities();
+    }
   }
 
   /// Chuyển ngày/tuần/tháng trước
