@@ -86,7 +86,9 @@ class HomeView extends StatelessWidget {
       description: AppStrings.drinkWaterDesc,
       buttonText: AppStrings.setting,
       buttonColor: AppColors.buttonBlue,
-      onButtonPressed: () {},
+      onButtonPressed: () {
+        Get.toNamed(RouteNames.drinkWaterSettings);
+      },
     );
   }
 }

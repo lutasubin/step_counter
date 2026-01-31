@@ -28,6 +28,12 @@ class AppStrings {
   static const String drinkWaterDesc =
       'Set water intake goals, receive reminders, and track your daily hydration easily.';
   static const String setting = 'Setting';
+  static const String drinkingGoal = 'Drinking goal';
+  static const String cupCapacity = 'Cup capacity';
+  static const String remind = 'Remind';
+  static const String startTime = 'Start time';
+  static const String endTime = 'End time';
+  static const String interval = 'Interval';
 
   static const String tryWidgets = 'Try Widgets!';
   static const String tryWidgetsDesc =

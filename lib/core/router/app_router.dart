@@ -19,6 +19,8 @@ import 'package:step_counter/features/report/views/report_view.dart';
 import 'package:step_counter/features/report/viewmodels/report_controller.dart';
 import 'package:step_counter/features/setting/views/setting_view.dart';
 import 'package:step_counter/features/setting/viewmodels/setting_controller.dart';
+import 'package:step_counter/features/drink_water/views/drink_water_settings_view.dart';
+import 'package:step_counter/features/drink_water/viewmodels/drink_water_settings_controller.dart';
 import 'package:step_counter/features/splash/views/splash_view.dart';
 import 'package:step_counter/features/splash/viewmodels/splash_controller.dart';
 import 'package:step_counter/features/welcome/views/welcome_view.dart';
@@ -86,6 +88,12 @@ class AppRouter {
       name: RouteNames.newBloodPressure,
       page: () => const NewBloodPressureView(),
       binding: NewBloodPressureBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: RouteNames.drinkWaterSettings,
+      page: () => const DrinkWaterSettingsView(),
+      binding: DrinkWaterSettingsBinding(),
       transition: Transition.noTransition,
     ),
   ];
@@ -176,5 +184,15 @@ class NewBloodPressureBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<NewBloodPressureController>(() => NewBloodPressureController());
+  }
+}
+
+/// Binding cho DrinkWaterSettingsController - dùng lazyPut để tối ưu
+class DrinkWaterSettingsBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<DrinkWaterSettingsController>(
+      () => DrinkWaterSettingsController(),
+    );
   }
 }
