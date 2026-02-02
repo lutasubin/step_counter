@@ -35,14 +35,20 @@ class NewBloodPressureController extends GetxController {
   /// Đang lưu
   bool get isSaving => _isSaving.value;
 
-  /// Status dựa trên systolic và diastolic
+  /// Status dựa trên systolic và diastolic (6 categories)
   String get status {
     if (systolic < 90 || diastolic < 60) {
-      return 'Low';
-    } else if (systolic > 119 || diastolic > 79) {
-      return 'High';
-    } else {
+      return 'Hypotension';
+    } else if (systolic >= 90 && systolic <= 119 && diastolic >= 60 && diastolic <= 79) {
       return 'Normal';
+    } else if (systolic >= 120 && systolic <= 129 && diastolic >= 60 && diastolic <= 79) {
+      return 'Elevated';
+    } else if (systolic >= 130 && systolic <= 139 && diastolic >= 80 && diastolic <= 89) {
+      return 'Stage 1';
+    } else if ((systolic >= 140 && systolic <= 180) || (diastolic >= 90 && diastolic <= 120)) {
+      return 'Stage 2';
+    } else {
+      return 'Hypertensive';
     }
   }
 

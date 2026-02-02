@@ -70,15 +70,26 @@ class BloodPressureCardWidget extends StatelessWidget {
     );
   }
 
-  /// Lấy màu dựa trên status
+  /// Lấy màu dựa trên status (6 categories)
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
+      case 'hypotension':
+        return Colors.blue; // Xanh dương
       case 'normal':
         return const Color(0xFF15D254); // Xanh lá
-      case 'high':
+      case 'elevated':
+        return Colors.yellow; // Vàng
+      case 'stage 1':
+        return const Color(0xFFFFA500); // Cam (Orange 1)
+      case 'stage 2':
+        return const Color(0xFFFF6B35); // Cam đậm (Orange 2)
+      case 'hypertensive':
         return Colors.red; // Đỏ
+      // Backward compatibility với dữ liệu cũ
       case 'low':
         return Colors.blue; // Xanh dương
+      case 'high':
+        return Colors.red; // Đỏ
       default:
         return const Color(0xFF15D254);
     }

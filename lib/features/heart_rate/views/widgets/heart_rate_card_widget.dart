@@ -72,9 +72,25 @@ class HeartRateCardWidget extends StatelessWidget {
     );
   }
 
-  /// Xây dựng status (Normal với green square) - căn giữa cho today
+  /// Lấy màu dựa trên status
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'normal':
+        return const Color(0xFF15D254); // Xanh lá cây
+      case 'low':
+        return Colors.blue; // Xanh dương
+      case 'elevated':
+        return Colors.orange; // Cam
+      case 'high':
+        return Colors.red; // Đỏ
+      default:
+        return const Color(0xFF15D254); // Mặc định xanh lá
+    }
+  }
+
+  /// Xây dựng status với màu phù hợp - căn giữa cho today
   Widget _buildStatusCentered() {
-    const greenColor = Color(0xFF15D254);
+    final statusColor = _getStatusColor(heartRate.status);
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -83,16 +99,16 @@ class HeartRateCardWidget extends StatelessWidget {
             width: 16,
             height: 16,
             decoration: BoxDecoration(
-              color: greenColor,
+              color: statusColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(width: 8),
           Text(
             heartRate.status,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Montserrat',
-              color: greenColor,
+              color: statusColor,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
@@ -102,25 +118,25 @@ class HeartRateCardWidget extends StatelessWidget {
     );
   }
 
-  /// Xây dựng status (Normal với green square) - cho historical
+  /// Xây dựng status với màu phù hợp - cho historical
   Widget _buildStatus() {
-    const greenColor = Color(0xFF15D254);
+    final statusColor = _getStatusColor(heartRate.status);
     return Row(
       children: [
         Container(
           width: 8,
           height: 8,
           decoration: BoxDecoration(
-            color: greenColor,
+            color: statusColor,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
         const SizedBox(width: 8),
         Text(
           heartRate.status,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Montserrat',
-            color: greenColor,
+            color: statusColor,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),

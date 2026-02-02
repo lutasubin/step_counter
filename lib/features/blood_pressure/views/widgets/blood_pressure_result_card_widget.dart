@@ -60,15 +60,21 @@ class BloodPressureResultCardWidget extends StatelessWidget {
     });
   }
 
-  /// Lấy màu dựa trên status
+  /// Lấy màu dựa trên status (6 categories)
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
+      case 'hypotension':
+        return Colors.blue; // Xanh dương
       case 'normal':
         return const Color(0xFF15D254); // Xanh lá
-      case 'high':
+      case 'elevated':
+        return Colors.yellow; // Vàng
+      case 'stage 1':
+        return const Color(0xFFFFA500); // Cam (Orange 1)
+      case 'stage 2':
+        return const Color(0xFFFF6B35); // Cam đậm (Orange 2)
+      case 'hypertensive':
         return Colors.red; // Đỏ
-      case 'low':
-        return Colors.blue; // Xanh dương
       default:
         return const Color(0xFF15D254);
     }
@@ -83,139 +89,183 @@ class BloodPressureResultCardWidget extends StatelessWidget {
     final segmentWidth =
         (barWidth - (gapWidth * (segmentCount - 1))) / segmentCount;
 
-    // Tính vị trí tam giác dựa trên systolic
-    final triangleLeft = _calculateTrianglePosition(
-      controller.systolic,
-      segmentWidth,
-      gapWidth,
-      barWidth,
-    );
+    return Obx(() {
+      // Truy cập systolic và diastolic để trigger reactive update
+      final systolic = controller.systolic;
+      final diastolic = controller.diastolic;
+      final status = controller.status;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          children: [
-            // Range bar với 6 segments bằng nhau
-            SizedBox(
-              height: 24,
-              width: barWidth,
-              child: Row(
-                children: [
-                  // Segment 1: Blue
-                  SizedBox(
-                    width: segmentWidth,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(4),
-                          bottomLeft: Radius.circular(4),
+      // Tính vị trí tam giác dựa trên cả systolic và diastolic
+      final triangleLeft = _calculateTrianglePosition(
+        systolic,
+        diastolic,
+        segmentWidth,
+        gapWidth,
+        barWidth,
+      );
+
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            children: [
+              // Range bar với 6 segments bằng nhau
+              SizedBox(
+                height: 24,
+                width: barWidth,
+                child: Row(
+                  children: [
+                    // Segment 1: Blue
+                    SizedBox(
+                      width: segmentWidth,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            bottomLeft: Radius.circular(4),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: gapWidth),
-                  // Segment 2: Green (Normal)
-                  SizedBox(
-                    width: segmentWidth,
-                    child: Container(color: greenColor),
-                  ),
-                  SizedBox(width: gapWidth),
-                  // Segment 3: Yellow
-                  SizedBox(
-                    width: segmentWidth,
-                    child: Container(color: Colors.yellow),
-                  ),
-                  SizedBox(width: gapWidth),
-                  // Segment 4: Orange 1
-                  SizedBox(
-                    width: segmentWidth,
-                    child: Container(color: const Color(0xFFFFA500)),
-                  ),
-                  SizedBox(width: gapWidth),
-                  // Segment 5: Orange 2
-                  SizedBox(
-                    width: segmentWidth,
-                    child: Container(color: const Color(0xFFFFA500)),
-                  ),
-                  SizedBox(width: gapWidth),
-                  // Segment 6: Red (High)
-                  SizedBox(
-                    width: segmentWidth,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(4),
-                          bottomRight: Radius.circular(4),
+                    SizedBox(width: gapWidth),
+                    // Segment 2: Green (Normal)
+                    SizedBox(
+                      width: segmentWidth,
+                      child: Container(color: greenColor),
+                    ),
+                    SizedBox(width: gapWidth),
+                    // Segment 3: Yellow
+                    SizedBox(
+                      width: segmentWidth,
+                      child: Container(color: Colors.yellow),
+                    ),
+                    SizedBox(width: gapWidth),
+                    // Segment 4: Orange 1
+                    SizedBox(
+                      width: segmentWidth,
+                      child: Container(color: const Color(0xFFFFA500)),
+                    ),
+                    SizedBox(width: gapWidth),
+                    // Segment 5: Orange 2
+                    SizedBox(
+                      width: segmentWidth,
+                      child: Container(color: const Color(0xFFFFA500)),
+                    ),
+                    SizedBox(width: gapWidth),
+                    // Segment 6: Red (High)
+                    SizedBox(
+                      width: segmentWidth,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(4),
+                            bottomRight: Radius.circular(4),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            // Triangle indicator (màu động dựa trên status)
-            SizedBox(
-              height: 8,
-              width: barWidth,
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: triangleLeft.clamp(0.0, barWidth - 12),
-                    child: CustomPaint(
-                      size: const Size(12, 8),
-                      painter: _TriangleIndicatorPainter(
-                        _getStatusColor(controller.status),
+              const SizedBox(height: 8),
+              // Triangle indicator (màu động dựa trên status, vị trí dựa trên systolic)
+              SizedBox(
+                height: 8,
+                width: barWidth,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: triangleLeft.clamp(0.0, barWidth - 12),
+                      child: CustomPaint(
+                        size: const Size(12, 8),
+                        painter: _TriangleIndicatorPainter(
+                          _getStatusColor(status),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    );
+            ],
+          );
+        },
+      );
+    });
   }
 
-  /// Tính vị trí tam giác dựa trên systolic
+  /// Tính vị trí tam giác dựa trên cả systolic và diastolic
+  /// Map to 6 segments theo categories:
+  /// Segment 0 (Blue): Hypotension - SYS < 90 or DIA < 60
+  /// Segment 1 (Green): Normal - SYS 90-119 and DIA 60-79
+  /// Segment 2 (Yellow): Elevated - SYS 120-129 and DIA 60-79
+  /// Segment 3 (Orange 1): Stage 1 - SYS 130-139 and DIA 80-89
+  /// Segment 4 (Orange 2): Stage 2 - SYS 140-180 or DIA 90-120
+  /// Segment 5 (Red): Hypertensive - SYS > 180 or DIA > 120
   double _calculateTrianglePosition(
     int systolic,
+    int diastolic,
     double segmentWidth,
     double gapWidth,
     double barWidth,
   ) {
-    // Map to 6 segments bằng nhau:
-    // Segment 0 (Blue): < 90
-    // Segment 1 (Green): 90-119 (Normal)
-    // Segment 2 (Yellow): 120-129
-    // Segment 3 (Orange 1): 130-139
-    // Segment 4 (Orange 2): 140-149
-    // Segment 5 (Red): >= 150
-
     int segmentIndex;
     double positionInSegment;
 
-    if (systolic < 90) {
+    // Xác định segment dựa trên cả systolic và diastolic theo đúng 6 categories
+    if (systolic < 90 || diastolic < 60) {
+      // Segment 0 (Blue): Hypotension
       segmentIndex = 0;
-      positionInSegment = systolic < 50 ? 0.0 : (systolic - 50) / 40.0;
-    } else if (systolic < 120) {
+      if (diastolic < 60 && systolic >= 90) {
+        // Diastolic thấp nhưng systolic bình thường -> đẩy về đầu segment
+        positionInSegment = 0.0;
+      } else {
+        positionInSegment = systolic < 50 ? 0.0 : (systolic - 50) / 40.0;
+      }
+    } else if (systolic >= 90 &&
+        systolic <= 119 &&
+        diastolic >= 60 &&
+        diastolic <= 79) {
+      // Segment 1 (Green): Normal
       segmentIndex = 1;
       positionInSegment = (systolic - 90) / 30.0; // 90-119 range
-    } else if (systolic < 130) {
+    } else if (systolic >= 120 &&
+        systolic <= 129 &&
+        diastolic >= 60 &&
+        diastolic <= 79) {
+      // Segment 2 (Yellow): Elevated
       segmentIndex = 2;
-      positionInSegment = (systolic - 120) / 10.0;
-    } else if (systolic < 140) {
+      positionInSegment = (systolic - 120) / 10.0; // 120-129 range
+    } else if (systolic >= 130 &&
+        systolic <= 139 &&
+        diastolic >= 80 &&
+        diastolic <= 89) {
+      // Segment 3 (Orange 1): Stage 1
       segmentIndex = 3;
-      positionInSegment = (systolic - 130) / 10.0;
-    } else if (systolic < 150) {
+      positionInSegment = (systolic - 130) / 10.0; // 130-139 range
+    } else if ((systolic >= 140 && systolic <= 180) ||
+        (diastolic >= 90 && diastolic <= 120)) {
+      // Segment 4 (Orange 2): Stage 2
       segmentIndex = 4;
-      positionInSegment = (systolic - 140) / 10.0;
+      if (diastolic >= 90 && diastolic <= 120 && systolic < 140) {
+        // Diastolic cao nhưng systolic chưa cao -> đẩy về đầu segment
+        positionInSegment = 0.0;
+      } else {
+        positionInSegment = systolic < 140
+            ? 0.0
+            : (systolic - 140) / 40.0; // 140-180 range
+      }
     } else {
+      // Segment 5 (Red): Hypertensive
       segmentIndex = 5;
-      positionInSegment = systolic >= 180 ? 1.0 : (systolic - 150) / 30.0;
+      if (diastolic > 120 && systolic <= 180) {
+        // Diastolic rất cao nhưng systolic chưa quá cao -> đẩy về đầu segment
+        positionInSegment = 0.0;
+      } else {
+        positionInSegment = systolic > 180
+            ? ((systolic - 180) / 20.0).clamp(0.0, 1.0)
+            : 0.0;
+      }
     }
 
     positionInSegment = positionInSegment.clamp(0.0, 1.0);

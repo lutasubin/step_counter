@@ -214,7 +214,7 @@ class HeartRateResultContentWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              // Triangle indicator - ở giữa green segment
+              // Triangle indicator - màu phù hợp với status
               SizedBox(
                 height: 8,
                 width: barWidth,
@@ -224,7 +224,9 @@ class HeartRateResultContentWidget extends StatelessWidget {
                       left: triangleLeft.clamp(0.0, barWidth - 12),
                       child: CustomPaint(
                         size: const Size(12, 8),
-                        painter: _TriangleIndicatorPainter(),
+                        painter: _TriangleIndicatorPainter(
+                          color: _getStatusColor(controller.status),
+                        ),
                       ),
                     ),
                   ],
@@ -289,28 +291,44 @@ class HeartRateResultContentWidget extends StatelessWidget {
     return (triangleCenter - 6).clamp(0.0, barWidth - 12);
   }
 
+  /// Lấy màu dựa trên status
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'normal':
+        return const Color(0xFF15D254); // Xanh lá cây
+      case 'low':
+        return Colors.blue; // Xanh dương
+      case 'elevated':
+        return Colors.orange; // Cam
+      case 'high':
+        return Colors.red; // Đỏ
+      default:
+        return const Color(0xFF15D254); // Mặc định xanh lá
+    }
+  }
+
   /// Xây dựng status
   Widget _buildStatus() {
     return Obx(() {
       // Truy cập bpm để trigger reactive
       final _ = controller.bpm.value;
-      const greenColor = Color(0xFF15D254);
+      final statusColor = _getStatusColor(controller.status);
       return Row(
         children: [
           Container(
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: greenColor,
+              color: statusColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(width: 8),
           Text(
             controller.status,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Montserrat',
-              color: greenColor,
+              color: statusColor,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
@@ -356,10 +374,13 @@ class HeartRateResultContentWidget extends StatelessWidget {
 
 /// Painter cho triangle indicator
 class _TriangleIndicatorPainter extends CustomPainter {
+  final Color color;
+
+  const _TriangleIndicatorPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
-    const greenColor = Color(0xFF15D254);
-    final paint = Paint()..color = greenColor;
+    final paint = Paint()..color = color;
     final path = Path()
       ..moveTo(size.width / 2, 0) // Đỉnh trên
       ..lineTo(0, size.height) // Góc trái dưới
@@ -369,5 +390,10 @@ class _TriangleIndicatorPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    if (oldDelegate is _TriangleIndicatorPainter) {
+      return oldDelegate.color != color;
+    }
+    return true;
+  }
 }
