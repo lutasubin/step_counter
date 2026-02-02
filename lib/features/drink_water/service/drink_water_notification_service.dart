@@ -18,10 +18,6 @@ class DrinkWaterNotificationService {
   static const String _channelName = 'Nhắc nhở uống nước';
   static const String _channelDescription = 'Thông báo nhắc nhở uống nước';
 
-  // Cache exact alarm permission để tránh check nhiều lần
-  bool? _cachedCanUseExact;
-  DateTime? _lastPermissionCheckTime;
-
   /// Khởi tạo notification service
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -348,26 +344,10 @@ class DrinkWaterNotificationService {
     // Schedule notification theo đúng doc flutter_local_notifications
     final scheduledTZDateTime = _convertToTZDateTime(scheduledTime);
 
-    // Kiểm tra xem có thể dùng exact alarm không (cache để tránh check nhiều lần)
-    bool canUseExact;
-    if (_cachedCanUseExact != null &&
-        _lastPermissionCheckTime != null &&
-        DateTime.now().difference(_lastPermissionCheckTime!).inMinutes < 5) {
-      // Dùng cache nếu check gần đây (< 5 phút)
-      canUseExact = _cachedCanUseExact!;
-    } else {
-      canUseExact = await canScheduleExactNotifications();
-      if (!canUseExact) {
-        canUseExact = await requestExactAlarmPermission();
-      }
-      _cachedCanUseExact = canUseExact;
-      _lastPermissionCheckTime = DateTime.now();
-    }
-
-    // Chọn schedule mode
-    final scheduleMode = canUseExact
-        ? AndroidScheduleMode.exactAllowWhileIdle
-        : AndroidScheduleMode.inexactAllowWhileIdle;
+    // Chỉ dùng inexact alarm để tránh Google Play reject
+    // Inexact alarm vẫn hoạt động tốt cho reminder, chỉ có thể delay vài phút
+    // Điều này hoàn toàn chấp nhận được cho reminder uống nước
+    final scheduleMode = AndroidScheduleMode.inexactAllowWhileIdle;
 
     // Schedule notification theo đúng API của flutter_local_notifications
     // Theo doc: zonedSchedule với androidScheduleMode là required parameter
@@ -388,37 +368,6 @@ class DrinkWaterNotificationService {
   /// Sử dụng local timezone
   tz.TZDateTime _convertToTZDateTime(DateTime dateTime) {
     return tz.TZDateTime.from(dateTime, tz.local);
-  }
-
-  /// Kiểm tra xem có thể dùng exact alarm không
-  Future<bool> canScheduleExactNotifications() async {
-    try {
-      final androidPlugin = _notifications
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      if (androidPlugin == null) return false;
-      return await androidPlugin.canScheduleExactNotifications() ?? false;
-    } catch (e) {
-      print('Error checking exact alarm permission: $e');
-      return false;
-    }
-  }
-
-  /// Request exact alarm permission (Android 12+)
-  /// Trả về true nếu permission được grant, false nếu không
-  Future<bool> requestExactAlarmPermission() async {
-    try {
-      final androidPlugin = _notifications
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      if (androidPlugin == null) return false;
-      return await androidPlugin.requestExactAlarmsPermission() ?? false;
-    } catch (e) {
-      print('Error requesting exact alarm permission: $e');
-      return false;
-    }
   }
 
   // Lưu danh sách notification IDs đã schedule để cancel nhanh
