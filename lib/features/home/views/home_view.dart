@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:step_counter/core/constants/app_assets.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
-import 'package:step_counter/core/constants/app_strings.dart';
-import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
 import 'package:step_counter/features/home/views/widgets/activity_summary_card_widget.dart';
 import 'package:step_counter/features/home/views/widgets/home_bottom_nav_widget.dart';
 import 'package:step_counter/features/home/views/widgets/home_header_widget.dart';
-import 'package:step_counter/features/home/views/widgets/track_card_widget.dart';
+import 'package:step_counter/features/home/views/widgets/home_heart_rate_card_widget.dart';
+import 'package:step_counter/features/home/views/widgets/home_blood_pressure_card_widget.dart';
+import 'package:step_counter/features/home/views/widgets/home_drink_water_card_widget.dart';
 import 'package:step_counter/features/home/views/widgets/try_widget_card_widget.dart';
 
 /// Màn hình home
@@ -18,6 +17,11 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
+
+    // Refresh dữ liệu khi quay lại home screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.refreshHomeCardsData();
+    });
 
     return Scaffold(
       backgroundColor: AppColors.homeBackground,
@@ -37,58 +41,24 @@ class HomeView extends StatelessWidget {
   /// Xây dựng nội dung scrollable
   Widget _buildContent(HomeController controller) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          const ActivitySummaryCardWidget(),
-          _buildTrackHeartRateCard(),
-          _buildTrackBloodPressureCard(),
-          _buildDrinkWaterCard(),
-          const TryWidgetCardWidget(),
-          const SizedBox(height: 20),
-        ],
+      child: Obx(
+        () => Column(
+          children: [
+            const ActivitySummaryCardWidget(),
+            controller.hasHeartRateData
+                ? const HomeHeartRateCardWidget()
+                : const SizedBox.shrink(),
+            controller.hasBloodPressureData
+                ? const HomeBloodPressureCardWidget()
+                : const SizedBox.shrink(),
+            controller.hasDrinkWaterData
+                ? const HomeDrinkWaterCardWidget()
+                : const SizedBox.shrink(),
+            const TryWidgetCardWidget(),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
-    );
-  }
-
-  /// Xây dựng card track heart rate
-  Widget _buildTrackHeartRateCard() {
-    return TrackCardWidget(
-      iconPath: AppAssets.iconHeart,
-      title: AppStrings.trackHeartRate,
-      description: AppStrings.trackHeartRateDesc,
-      buttonText: AppStrings.measure,
-      buttonColor: AppColors.buttonOrange,
-      onButtonPressed: () {
-        Get.toNamed(RouteNames.heartRate);
-      },
-    );
-  }
-
-  /// Xây dựng card track blood pressure
-  Widget _buildTrackBloodPressureCard() {
-    return TrackCardWidget(
-      iconPath: AppAssets.iconBlood,
-      title: AppStrings.trackBloodPressure,
-      description: AppStrings.trackBloodPressureDesc,
-      buttonText: AppStrings.record,
-      buttonColor: AppColors.buttonTeal,
-      onButtonPressed: () {
-        Get.toNamed(RouteNames.bloodPressure);
-      },
-    );
-  }
-
-  /// Xây dựng card drink water
-  Widget _buildDrinkWaterCard() {
-    return TrackCardWidget(
-      iconPath: AppAssets.iconDrink,
-      title: AppStrings.drinkWater,
-      description: AppStrings.drinkWaterDesc,
-      buttonText: AppStrings.setting,
-      buttonColor: AppColors.buttonBlue,
-      onButtonPressed: () {
-        Get.toNamed(RouteNames.drinkWaterSettings);
-      },
     );
   }
 }

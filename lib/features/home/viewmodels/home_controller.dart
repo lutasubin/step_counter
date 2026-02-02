@@ -4,6 +4,11 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:step_counter/core/di/di_setup.dart';
 import 'package:step_counter/core/services/notification_service.dart';
+import 'package:step_counter/features/blood_pressure/model/blood_pressure_model.dart';
+import 'package:step_counter/features/blood_pressure/repositories/blood_pressure_repository.dart';
+import 'package:step_counter/features/drink_water/repositories/drink_water_repository.dart';
+import 'package:step_counter/features/heart_rate/model/heart_rate_model.dart';
+import 'package:step_counter/features/heart_rate/repositories/heart_rate_repository.dart';
 import 'package:step_counter/features/home/model/activity_data_model.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/report/model/daily_activity_model.dart';
@@ -14,9 +19,22 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final StepCounterService _stepCounterService;
   final ReportService _reportService;
   final NotificationService _notificationService;
+  final HeartRateRepository _heartRateRepository;
+  final BloodPressureRepository _bloodPressureRepository;
+  final DrinkWaterRepository _drinkWaterRepository;
   final _activityData = ActivityDataModel.empty().obs;
   final _isCounting = false.obs;
   final _elapsedSeconds = 0.obs;
+
+  // Dữ liệu cho các home cards
+  final _latestHeartRate = Rxn<HeartRateModel>();
+  final _latestBloodPressure = Rxn<BloodPressureModel>();
+  final _hasHeartRateData = false.obs;
+  final _hasBloodPressureData = false.obs;
+  final _hasDrinkWaterData = false.obs;
+  final _drinkWaterCurrentAmount = 0.obs;
+  final _drinkWaterGoal = 2000.obs;
+  final _drinkWaterCupCapacity = 250.obs;
 
   StreamSubscription<int>? _stepSubscription;
   Timer? _timer;
@@ -33,7 +51,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   HomeController(this._stepCounterService)
     : _reportService = getIt<ReportService>(),
-      _notificationService = getIt<NotificationService>();
+      _notificationService = getIt<NotificationService>(),
+      _heartRateRepository = getIt<HeartRateRepository>(),
+      _bloodPressureRepository = getIt<BloodPressureRepository>(),
+      _drinkWaterRepository = getIt<DrinkWaterRepository>();
 
   /// Dữ liệu hoạt động
   ActivityDataModel get activityData => _activityData.value;
@@ -41,11 +62,60 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   /// Đang đếm bước
   bool get isCounting => _isCounting.value;
 
+  /// Heart rate mới nhất
+  HeartRateModel? get latestHeartRate => _latestHeartRate.value;
+
+  /// Blood pressure mới nhất
+  BloodPressureModel? get latestBloodPressure => _latestBloodPressure.value;
+
+  /// Có dữ liệu heart rate
+  bool get hasHeartRateData => _hasHeartRateData.value;
+
+  /// Có dữ liệu blood pressure
+  bool get hasBloodPressureData => _hasBloodPressureData.value;
+
+  /// Có dữ liệu drink water
+  bool get hasDrinkWaterData => _hasDrinkWaterData.value;
+
+  /// Drink water current amount
+  int get drinkWaterCurrentAmount => _drinkWaterCurrentAmount.value;
+
+  /// Drink water goal
+  int get drinkWaterGoal => _drinkWaterGoal.value;
+
+  /// Drink water cup capacity
+  int get drinkWaterCupCapacity => _drinkWaterCupCapacity.value;
+
   @override
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     _loadData();
+    _loadHomeCardsData();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // Refresh dữ liệu khi quay lại home screen
+    _loadHomeCardsData();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      // App quay lại foreground
+      // Refresh dữ liệu home cards
+      _loadHomeCardsData();
+
+      // Nếu đang đếm bước, tính lại thời gian dựa trên startTime
+      if (_isCounting.value) {
+        _recalculateElapsedTime();
+      }
+    }
+    // Không cần xử lý khi app vào background vì thời gian vẫn được tính dựa trên timestamp
   }
 
   @override
@@ -55,19 +125,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     _timer?.cancel();
     _stepPollingTimer?.cancel();
     super.onClose();
-  }
-
-  /// Xử lý khi app lifecycle thay đổi (foreground/background)
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (!_isCounting.value) return;
-
-    if (state == AppLifecycleState.resumed) {
-      // App quay lại foreground - tính lại thời gian dựa trên startTime
-      _recalculateElapsedTime();
-    }
-    // Không cần xử lý khi app vào background vì thời gian vẫn được tính dựa trên timestamp
   }
 
   /// Tính lại thời gian đã trôi qua dựa trên startTime
@@ -315,5 +372,86 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     } else {
       await startCounting();
     }
+  }
+
+  /// Load dữ liệu cho các home cards từ database
+  Future<void> _loadHomeCardsData() async {
+    await Future.wait([
+      _loadHeartRateData(),
+      _loadBloodPressureData(),
+      _loadDrinkWaterData(),
+    ]);
+  }
+
+  /// Load heart rate data từ database (chỉ lấy dữ liệu hôm nay)
+  Future<void> _loadHeartRateData() async {
+    try {
+      final heartRates = await _heartRateRepository.getTodayHeartRate();
+      if (heartRates.isEmpty) {
+        _hasHeartRateData.value = false;
+        _latestHeartRate.value = null;
+        return;
+      }
+      // Sắp xếp theo dateTime giảm dần và lấy cái đầu tiên
+      heartRates.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+      _latestHeartRate.value = heartRates.first;
+      _hasHeartRateData.value = true;
+    } catch (e) {
+      print('Error loading heart rate data: $e');
+      _hasHeartRateData.value = false;
+      _latestHeartRate.value = null;
+    }
+  }
+
+  /// Load blood pressure data từ database (chỉ lấy dữ liệu hôm nay)
+  Future<void> _loadBloodPressureData() async {
+    try {
+      final bloodPressure = await _bloodPressureRepository
+          .getTodayBloodPressure();
+      if (bloodPressure == null) {
+        _hasBloodPressureData.value = false;
+        _latestBloodPressure.value = null;
+        return;
+      }
+      _latestBloodPressure.value = bloodPressure;
+      _hasBloodPressureData.value = true;
+    } catch (e) {
+      print('Error loading blood pressure data: $e');
+      _hasBloodPressureData.value = false;
+      _latestBloodPressure.value = null;
+    }
+  }
+
+  /// Load drink water data từ database (chỉ lấy dữ liệu hôm nay)
+  Future<void> _loadDrinkWaterData() async {
+    try {
+      // Load settings từ SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final goal = prefs.getInt('drink_water_goal');
+      final cupCapacity = prefs.getInt('drink_water_cup_capacity');
+
+      // Nếu đã có settings, dùng giá trị đó, nếu không dùng default
+      _drinkWaterGoal.value = goal ?? 2000;
+      _drinkWaterCupCapacity.value = cupCapacity ?? 250;
+
+      // Tính tổng amount hôm nay
+      final today = DateTime.now();
+      final date = DateTime(today.year, today.month, today.day);
+      final currentAmount = await _drinkWaterRepository.getTotalAmountByDate(
+        date,
+      );
+      _drinkWaterCurrentAmount.value = currentAmount;
+
+      // Card chỉ hiển thị nếu có records của ngày hôm nay (đã uống nước hôm nay)
+      _hasDrinkWaterData.value = currentAmount > 0;
+    } catch (e) {
+      print('Error loading drink water data: $e');
+      _hasDrinkWaterData.value = false;
+    }
+  }
+
+  /// Refresh dữ liệu home cards (gọi từ bên ngoài khi cần)
+  Future<void> refreshHomeCardsData() async {
+    await _loadHomeCardsData();
   }
 }

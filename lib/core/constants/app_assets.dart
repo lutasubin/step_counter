@@ -16,6 +16,11 @@ class AppAssets {
   static const String iconBlood = 'assets/svg/blood.svg';
   static const String iconTryWidget = 'assets/svg/try_widget.svg';
 
+  // Home card icons (mới)
+  static const String iconHeartCard = 'assets/images/heart_icon.png';
+  static const String iconBloodCard = 'assets/images/blood_icon.png';
+  static const String iconDrinkCard = 'assets/svg/Drink_icon.svg';
+
   // Activity metrics icons
   static const String iconFire = 'assets/svg/fire.svg';
   static const String iconKilomet = 'assets/svg/kilomet.svg';

@@ -16,6 +16,7 @@ import 'package:step_counter/features/report/repositories/report_repository_impl
 import 'package:step_counter/features/report/service/report_service.dart';
 import 'package:step_counter/features/splash/repositories/splash_repository.dart';
 import 'package:step_counter/features/splash/repositories/splash_repository_impl.dart';
+import 'package:step_counter/features/splash/service/app_data_service.dart';
 import 'package:step_counter/features/splash/service/splash_service.dart';
 
 /// Dependency Injection setup
@@ -56,4 +57,5 @@ void setupDI() {
   getIt.registerLazySingleton<HeartRateMeasurementService>(
     () => HeartRateMeasurementService(),
   );
+  getIt.registerLazySingleton<AppDataService>(() => AppDataService());
 }

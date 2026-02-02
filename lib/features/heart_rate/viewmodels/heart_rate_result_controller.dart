@@ -4,6 +4,7 @@ import 'package:step_counter/features/heart_rate/model/heart_rate_model.dart';
 import 'package:step_counter/features/heart_rate/repositories/heart_rate_repository.dart';
 import 'package:step_counter/features/heart_rate/viewmodels/heart_rate_controller.dart';
 import 'package:step_counter/features/heart_rate/views/widgets/heart_rate_info_dialog.dart';
+import 'package:step_counter/features/home/viewmodels/home_controller.dart';
 
 /// Controller quản lý logic của heart rate result screen
 class HeartRateResultController extends GetxController {
@@ -78,6 +79,12 @@ class HeartRateResultController extends GetxController {
       // Refresh HeartRateController để load dữ liệu mới
       final heartRateController = Get.find<HeartRateController>();
       await heartRateController.refreshHeartRates();
+
+      // Refresh HomeController để cập nhật home cards real-time
+      if (Get.isRegistered<HomeController>()) {
+        final homeController = Get.find<HomeController>();
+        await homeController.refreshHomeCardsData();
+      }
 
       // Hiển thị dialog thông tin BPM
       // Dialog sẽ tự động quay lại màn hình Heart rate khi user bấm GOT IT

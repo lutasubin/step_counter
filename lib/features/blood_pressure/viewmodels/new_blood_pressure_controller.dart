@@ -6,6 +6,7 @@ import 'package:step_counter/features/blood_pressure/model/blood_pressure_model.
 import 'package:step_counter/features/blood_pressure/repositories/blood_pressure_repository.dart';
 import 'package:step_counter/features/blood_pressure/viewmodels/blood_pressure_controller.dart';
 import 'package:step_counter/features/blood_pressure/views/widgets/blood_pressure_info_bottom_sheet.dart';
+import 'package:step_counter/features/home/viewmodels/home_controller.dart';
 
 /// Controller quản lý logic của new blood pressure screen
 class NewBloodPressureController extends GetxController {
@@ -39,13 +40,23 @@ class NewBloodPressureController extends GetxController {
   String get status {
     if (systolic < 90 || diastolic < 60) {
       return 'Hypotension';
-    } else if (systolic >= 90 && systolic <= 119 && diastolic >= 60 && diastolic <= 79) {
+    } else if (systolic >= 90 &&
+        systolic <= 119 &&
+        diastolic >= 60 &&
+        diastolic <= 79) {
       return 'Normal';
-    } else if (systolic >= 120 && systolic <= 129 && diastolic >= 60 && diastolic <= 79) {
+    } else if (systolic >= 120 &&
+        systolic <= 129 &&
+        diastolic >= 60 &&
+        diastolic <= 79) {
       return 'Elevated';
-    } else if (systolic >= 130 && systolic <= 139 && diastolic >= 80 && diastolic <= 89) {
+    } else if (systolic >= 130 &&
+        systolic <= 139 &&
+        diastolic >= 80 &&
+        diastolic <= 89) {
       return 'Stage 1';
-    } else if ((systolic >= 140 && systolic <= 180) || (diastolic >= 90 && diastolic <= 120)) {
+    } else if ((systolic >= 140 && systolic <= 180) ||
+        (diastolic >= 90 && diastolic <= 120)) {
       return 'Stage 2';
     } else {
       return 'Hypertensive';
@@ -80,6 +91,12 @@ class NewBloodPressureController extends GetxController {
       // Refresh danh sách
       final bloodPressureController = Get.find<BloodPressureController>();
       await bloodPressureController.refreshBloodPressures();
+
+      // Refresh HomeController để cập nhật home cards real-time
+      if (Get.isRegistered<HomeController>()) {
+        final homeController = Get.find<HomeController>();
+        await homeController.refreshHomeCardsData();
+      }
 
       // Hiển thị bottom sheet Information
       Get.bottomSheet(
