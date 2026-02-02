@@ -29,9 +29,9 @@ class SettingItemWidget extends StatelessWidget {
               child: Text(
                 title,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ),

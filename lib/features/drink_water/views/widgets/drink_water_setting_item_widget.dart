@@ -20,6 +20,7 @@ class DrinkWaterSettingItemWidget extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
             fontSize: 14,
           ),

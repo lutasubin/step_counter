@@ -58,7 +58,11 @@ class HeartRateResultContentWidget extends StatelessWidget {
       return Center(
         child: Text(
           timeText,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+          style: const TextStyle(
+            fontFamily: 'Montserrat',
+            color: AppColors.textPrimary,
+            fontSize: 14,
+          ),
         ),
       );
     });
@@ -75,9 +79,10 @@ class HeartRateResultContentWidget extends StatelessWidget {
             Text(
               '${controller.bpm.value}',
               style: const TextStyle(
+                fontFamily: 'Montserrat',
                 color: AppColors.textPrimary,
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
+                fontSize: 56,
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(width: 8),
@@ -89,7 +94,11 @@ class HeartRateResultContentWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 const Text(
                   'BMP',
-                  style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: AppColors.textPrimary,
+                    fontSize: 18,
+                  ),
                 ),
               ],
             ),
@@ -104,7 +113,11 @@ class HeartRateResultContentWidget extends StatelessWidget {
     return const Center(
       child: Text(
         AppStrings.yourResultIs,
-        style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+        style: TextStyle(
+          fontFamily: 'Montserrat',
+          color: AppColors.textPrimary,
+          fontSize: 14,
+        ),
       ),
     );
   }
@@ -296,9 +309,10 @@ class HeartRateResultContentWidget extends StatelessWidget {
           Text(
             controller.status,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: greenColor,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const Spacer(),
@@ -330,7 +344,11 @@ class HeartRateResultContentWidget extends StatelessWidget {
     return Center(
       child: Text(
         AppStrings.normalRange,
-        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+        style: const TextStyle(
+          fontFamily: 'Montserrat',
+          color: AppColors.textSecondary,
+          fontSize: 12,
+        ),
       ),
     );
   }

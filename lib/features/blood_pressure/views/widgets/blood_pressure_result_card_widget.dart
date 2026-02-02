@@ -26,9 +26,10 @@ class BloodPressureResultCardWidget extends StatelessWidget {
             Text(
               AppStrings.yourResultIs,
               style: const TextStyle(
+                fontFamily: 'Montserrat',
                 color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 16),
@@ -47,9 +48,9 @@ class BloodPressureResultCardWidget extends StatelessWidget {
               child: Text(
                 'Normal range: ${controller.normalRange}',
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -244,9 +245,10 @@ class BloodPressureResultCardWidget extends StatelessWidget {
         Text(
           controller.status,
           style: TextStyle(
+            fontFamily: 'Montserrat',
             color: statusColor,
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(width: 8),

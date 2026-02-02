@@ -52,11 +52,12 @@ class ReportPeriodSelectorWidget extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
+                fontFamily: 'Montserrat',
                 color: controller.selectedPeriod == period
                     ? AppColors.buttonOrange
-                    : AppColors.textPrimary,
+                    : AppColors.textSecondary,
                 fontSize: 14,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),

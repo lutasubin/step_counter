@@ -131,9 +131,9 @@ class ReportChartWidget extends StatelessWidget {
                     return Text(
                       _formatStepValue(value.toInt()),
                       style: const TextStyle(
+                        fontFamily: 'Montserrat',
                         color: AppColors.textSecondary,
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
                       ),
                     );
                   }
@@ -170,11 +170,9 @@ class ReportChartWidget extends StatelessWidget {
                         child: Text(
                           labels[index],
                           style: TextStyle(
-                            color: controller.selectedIndex == index
-                                ? AppColors.buttonOrange
-                                : AppColors.textSecondary,
+                            fontFamily: 'Montserrat',
+                            color: AppColors.textSecondary,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -287,7 +285,10 @@ class ReportChartWidget extends StatelessWidget {
           child: Center(
             child: Text(
               'Không có dữ liệu',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         );
@@ -379,9 +380,9 @@ class ReportChartWidget extends StatelessWidget {
                     return Text(
                       _formatStepValue(value.toInt()),
                       style: const TextStyle(
+                        fontFamily: 'Montserrat',
                         color: AppColors.textSecondary,
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
                       ),
                     );
                   }
@@ -424,11 +425,9 @@ class ReportChartWidget extends StatelessWidget {
                             child: Text(
                               _getXAxisLabel(index),
                               style: TextStyle(
-                                color: controller.selectedIndex == index
-                                    ? AppColors.buttonOrange
-                                    : AppColors.textSecondary,
+                                fontFamily: 'Montserrat',
+                                color: AppColors.textSecondary,
                                 fontSize: 12,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -451,11 +450,9 @@ class ReportChartWidget extends StatelessWidget {
                         child: Text(
                           _getXAxisLabel(index),
                           style: TextStyle(
-                            color: controller.selectedIndex == index
-                                ? AppColors.buttonOrange
-                                : AppColors.textSecondary,
+                            fontFamily: 'Montserrat',
+                            color: AppColors.textSecondary,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -682,15 +679,20 @@ class ReportChartWidget extends StatelessWidget {
                 Text(
                   '$steps',
                   style: const TextStyle(
+                    fontFamily: 'Montserrat',
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 2),
                 const Text(
                   AppStrings.step,
-                  style: TextStyle(color: Colors.white, fontSize: 12),
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),

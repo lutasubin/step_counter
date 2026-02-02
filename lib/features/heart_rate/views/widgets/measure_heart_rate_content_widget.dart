@@ -62,15 +62,20 @@ class MeasureHeartRateContentWidget extends StatelessWidget {
                 Text(
                   controller.bpm.toString().padLeft(2, '0'),
                   style: const TextStyle(
+                    fontFamily: 'Montserrat',
                     color: AppColors.textPrimary,
                     fontSize: 48,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'BMP',
-                  style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: AppColors.textPrimary,
+                    fontSize: 18,
+                  ),
                 ),
               ],
             ),
@@ -91,6 +96,7 @@ class MeasureHeartRateContentWidget extends StatelessWidget {
               AppStrings.coverCameraInstruction,
               textAlign: TextAlign.center,
               style: const TextStyle(
+                fontFamily: 'Montserrat',
                 color: AppColors.textSecondary,
                 fontSize: 16,
               ),
@@ -115,7 +121,11 @@ class MeasureHeartRateContentWidget extends StatelessWidget {
         children: [
           Text(
             '${AppStrings.measuring} ($progressPercent%)',
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
+            style: const TextStyle(
+              fontFamily: 'Montserrat',
+              color: AppColors.textPrimary,
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: 12),
           ClipRRect(
@@ -137,7 +147,11 @@ class MeasureHeartRateContentWidget extends StatelessWidget {
     return Text(
       AppStrings.measureInstruction,
       textAlign: TextAlign.center,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+      style: const TextStyle(
+        fontFamily: 'Montserrat',
+        color: AppColors.textPrimary,
+        fontSize: 14,
+      ),
     );
   }
 }

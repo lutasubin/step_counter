@@ -101,3 +101,55 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  # Custom fonts - Montserrat (Static fonts)
+  fonts:
+    - family: Montserrat
+      fonts:
+        # Normal style với các weights
+        - asset: assets/Montserrat/static/Montserrat-Thin.ttf
+          weight: 100  # Thin
+        - asset: assets/Montserrat/static/Montserrat-ExtraLight.ttf
+          weight: 200  # ExtraLight
+        - asset: assets/Montserrat/static/Montserrat-Light.ttf
+          weight: 300  # Light
+        - asset: assets/Montserrat/static/Montserrat-Regular.ttf
+          weight: 400  # Regular/Normal
+        - asset: assets/Montserrat/static/Montserrat-Medium.ttf
+          weight: 500  # Medium
+        - asset: assets/Montserrat/static/Montserrat-SemiBold.ttf
+          weight: 600  # SemiBold
+        - asset: assets/Montserrat/static/Montserrat-Bold.ttf
+          weight: 700  # Bold
+        - asset: assets/Montserrat/static/Montserrat-ExtraBold.ttf
+          weight: 800  # ExtraBold
+        - asset: assets/Montserrat/static/Montserrat-Black.ttf
+          weight: 900  # Black
+        # Italic style với các weights
+        - asset: assets/Montserrat/static/Montserrat-ThinItalic.ttf
+          style: italic
+          weight: 100  # Thin Italic
+        - asset: assets/Montserrat/static/Montserrat-ExtraLightItalic.ttf
+          style: italic
+          weight: 200  # ExtraLight Italic
+        - asset: assets/Montserrat/static/Montserrat-LightItalic.ttf
+          style: italic
+          weight: 300  # Light Italic
+        - asset: assets/Montserrat/static/Montserrat-Italic.ttf
+          style: italic
+          weight: 400  # Regular Italic
+        - asset: assets/Montserrat/static/Montserrat-MediumItalic.ttf
+          style: italic
+          weight: 500  # Medium Italic
+        - asset: assets/Montserrat/static/Montserrat-SemiBoldItalic.ttf
+          style: italic
+          weight: 600  # SemiBold Italic
+        - asset: assets/Montserrat/static/Montserrat-BoldItalic.ttf
+          style: italic
+          weight: 700  # Bold Italic
+        - asset: assets/Montserrat/static/Montserrat-ExtraBoldItalic.ttf
+          style: italic
+          weight: 800  # ExtraBold Italic
+        - asset: assets/Montserrat/static/Montserrat-BlackItalic.ttf
+          style: italic
+          weight: 900  # Black Italic

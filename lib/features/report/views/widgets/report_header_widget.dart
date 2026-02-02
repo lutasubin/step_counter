@@ -29,9 +29,10 @@ class ReportHeaderWidget extends StatelessWidget {
           const Text(
             AppStrings.reportCounter,
             style: TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

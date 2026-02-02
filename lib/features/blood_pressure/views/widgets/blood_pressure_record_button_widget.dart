@@ -29,9 +29,10 @@ class BloodPressureRecordButtonWidget extends StatelessWidget {
           child: const Text(
             AppStrings.recordBloodPressure,
             style: TextStyle(
+              fontFamily: 'Montserrat',
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

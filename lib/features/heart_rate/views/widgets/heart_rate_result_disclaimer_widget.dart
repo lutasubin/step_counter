@@ -29,8 +29,9 @@ class HeartRateResultDisclaimerWidget extends StatelessWidget {
               child: Text(
                 AppStrings.disclaimerText,
                 style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
                 ),
               ),
             ),

@@ -39,9 +39,9 @@ class BloodPressureDatePickerWidget extends StatelessWidget {
                 child: Text(
                   formattedDate,
                   style: const TextStyle(
+                    fontFamily: 'Montserrat',
                     color: AppColors.textPrimary,
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

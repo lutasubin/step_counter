@@ -31,15 +31,20 @@ class ReportStepDisplayWidget extends StatelessWidget {
         Text(
           '$steps',
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
             fontSize: 48,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           AppStrings.step,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
+          style: const TextStyle(
+            fontFamily: 'Montserrat',
+            color: AppColors.textSecondary,
+            fontSize: 16,
+          ),
         ),
       ],
     );
@@ -55,17 +60,19 @@ class ReportStepDisplayWidget extends StatelessWidget {
               Text(
                 '$avgSteps',
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 AppStrings.avgPerDay,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
-                  fontSize: 12,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -77,17 +84,19 @@ class ReportStepDisplayWidget extends StatelessWidget {
               Text(
                 _formatNumberWithComma(totalSteps),
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 AppStrings.totalStep,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
-                  fontSize: 12,
+                  fontSize: 14,
                 ),
               ),
             ],

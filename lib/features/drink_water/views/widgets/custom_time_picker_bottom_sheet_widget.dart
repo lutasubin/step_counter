@@ -87,9 +87,10 @@ class _CustomTimePickerBottomSheetWidgetState
       child: Text(
         title,
         style: const TextStyle(
+          fontFamily: 'Montserrat',
           color: AppColors.textPrimary,
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -176,9 +177,12 @@ class _CustomTimePickerBottomSheetWidgetState
             child: Text(
               item.toString().padLeft(2, '0'),
               style: TextStyle(
-                color: AppColors.textPrimary,
+                fontFamily: 'Montserrat',
+                color: isSelected
+                    ? AppColors.textPrimary
+                    : AppColors.textSecondary,
                 fontSize: 18,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
               ),
             ),
           );
@@ -218,9 +222,10 @@ class _CustomTimePickerBottomSheetWidgetState
           child: const Text(
             AppStrings.done,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              fontFamily: 'Montserrat',
+              color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

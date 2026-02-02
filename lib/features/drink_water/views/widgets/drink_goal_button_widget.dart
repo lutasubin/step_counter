@@ -32,9 +32,9 @@ class DrinkGoalButtonWidget extends StatelessWidget {
               Text(
                 '${controller.drinkingGoal} ml',
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
               const SizedBox(width: 8),

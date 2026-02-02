@@ -129,9 +129,10 @@ class _BloodPressureTimePickerBottomSheetState
                 const Text(
                   AppStrings.timeSetting,
                   style: TextStyle(
+                    fontFamily: 'Montserrat',
                     color: AppColors.textPrimary,
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -245,9 +246,10 @@ class _BloodPressureTimePickerBottomSheetState
                 child: const Text(
                   AppStrings.done,
                   style: TextStyle(
+                    fontFamily: 'Montserrat',
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -272,9 +274,10 @@ class _BloodPressureTimePickerBottomSheetState
             Text(
               label,
               style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontFamily: 'Montserrat',
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
             ),
           if (label.isNotEmpty) const SizedBox(height: 8),
@@ -302,12 +305,13 @@ class _BloodPressureTimePickerBottomSheetState
                       child: Text(
                         itemValue,
                         style: TextStyle(
+                          fontFamily: 'Montserrat',
                           color: isSelected
                               ? AppColors.textPrimary
                               : AppColors.textSecondary,
-                          fontSize: isSelected ? 20 : 16,
+                          fontSize: 20,
                           fontWeight: isSelected
-                              ? FontWeight.bold
+                              ? FontWeight.w700
                               : FontWeight.normal,
                         ),
                       ),

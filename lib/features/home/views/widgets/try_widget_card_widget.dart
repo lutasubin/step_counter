@@ -38,15 +38,17 @@ class TryWidgetCardWidget extends StatelessWidget {
           Text(
             AppStrings.tryWidgets,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             AppStrings.tryWidgetsDesc,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textSecondary,
               fontSize: 14,
             ),
@@ -66,9 +68,10 @@ class TryWidgetCardWidget extends StatelessWidget {
               child: Text(
                 AppStrings.addWidget,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: Colors.white,
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),

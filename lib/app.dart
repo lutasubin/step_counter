@@ -28,6 +28,69 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        fontFamily: 'Montserrat',
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          displayMedium: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          displaySmall: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          headlineLarge: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w700,
+          ),
+          headlineMedium: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w700,
+          ),
+          headlineSmall: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+          ),
+          titleLarge: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+          ),
+          titleMedium: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w500,
+          ),
+          titleSmall: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w500,
+          ),
+          bodyLarge: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          bodyMedium: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          bodySmall: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          labelLarge: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w500,
+          ),
+          labelMedium: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+          labelSmall: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w400,
+          ),
+        ),
       ),
       initialRoute: RouteNames.splash,
       getPages: AppRouter.routes,

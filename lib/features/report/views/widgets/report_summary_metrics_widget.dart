@@ -70,16 +70,18 @@ class ReportSummaryMetricsWidget extends StatelessWidget {
         Text(
           value,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
           ),
         ),
         Text(
           unit,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textSecondary,
-            fontSize: 12,
+            fontSize: 14,
           ),
         ),
       ],

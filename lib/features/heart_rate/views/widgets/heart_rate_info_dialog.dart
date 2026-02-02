@@ -24,9 +24,10 @@ class HeartRateInfoDialog extends StatelessWidget {
             const Text(
               'Information',
               style: TextStyle(
+                fontFamily: 'Montserrat',
                 color: AppColors.textPrimary,
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 20),
@@ -80,9 +81,10 @@ class HeartRateInfoDialog extends StatelessWidget {
                 child: const Text(
                   'GOT IT',
                   style: TextStyle(
+                    fontFamily: 'Montserrat',
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -116,14 +118,17 @@ class HeartRateInfoDialog extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  color: color,
                   fontSize: 16,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
                 range,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
                   fontSize: 14,
                 ),

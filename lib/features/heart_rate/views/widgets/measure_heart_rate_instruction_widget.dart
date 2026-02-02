@@ -20,7 +20,8 @@ class MeasureHeartRateInstructionWidget extends StatelessWidget {
           Text(
             AppStrings.coverCameraInstruction,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+            style: const TextStyle(
+                        fontFamily: 'Montserrat',color: AppColors.textPrimary, fontSize: 14),
           ),
           const SizedBox(height: 20),
           _buildIllustration(),

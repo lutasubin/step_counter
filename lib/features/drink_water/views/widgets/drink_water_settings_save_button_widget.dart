@@ -36,9 +36,10 @@ class DrinkWaterSettingsSaveButtonWidget extends StatelessWidget {
         child: const Text(
           AppStrings.save,
           style: TextStyle(
-            color: AppColors.textPrimary,
+            fontFamily: 'Montserrat',
+            color: Colors.white,
             fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),

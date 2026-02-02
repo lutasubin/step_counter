@@ -47,17 +47,19 @@ class ActivitySummaryCardWidget extends StatelessWidget {
                 TextSpan(
                   text: '${controller.activityData.stepCount}',
                   style: const TextStyle(
+                    fontFamily: 'Montserrat',
                     color: AppColors.textPrimary,
-                    fontSize: 40, // số bước to hơn
-                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 TextSpan(
                   text: ' / ${AppStrings.steps}',
                   style: const TextStyle(
+                    fontFamily: 'Montserrat',
                     color: AppColors.textSecondary,
-                    fontSize: 16, // chữ "Bước" nhỏ hơn
-                    fontWeight: FontWeight.normal,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -113,15 +115,20 @@ class ActivitySummaryCardWidget extends StatelessWidget {
           () => Text(
             controller.activityData.calories.toStringAsFixed(1),
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
         Text(
           AppStrings.kcal,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          style: const TextStyle(
+            fontFamily: 'Montserrat',
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -137,15 +144,20 @@ class ActivitySummaryCardWidget extends StatelessWidget {
           () => Text(
             controller.activityData.distance.toStringAsFixed(1),
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
         Text(
           AppStrings.km,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          style: const TextStyle(
+            fontFamily: 'Montserrat',
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -161,15 +173,20 @@ class ActivitySummaryCardWidget extends StatelessWidget {
           () => Text(
             controller.activityData.duration,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
         Text(
           AppStrings.min,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          style: const TextStyle(
+            fontFamily: 'Montserrat',
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -185,9 +202,10 @@ class ActivitySummaryCardWidget extends StatelessWidget {
           child: Text(
             AppStrings.report,
             style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18 ,
-              fontWeight: FontWeight.bold,
+              fontFamily: 'Montserrat',
+              color: AppColors.buttonOrange,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -199,9 +217,10 @@ class ActivitySummaryCardWidget extends StatelessWidget {
               Text(
                 AppStrings.detail,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.buttonOrange,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(width: 4),

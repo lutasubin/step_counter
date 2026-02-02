@@ -29,9 +29,10 @@ class BloodPressureInfoBottomSheet extends StatelessWidget {
                   child: Text(
                     AppStrings.information,
                     style: TextStyle(
+                      fontFamily: 'Montserrat',
                       color: AppColors.textPrimary,
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -105,9 +106,10 @@ class BloodPressureInfoBottomSheet extends StatelessWidget {
                 child: const Text(
                   AppStrings.gotIt,
                   style: TextStyle(
+                    fontFamily: 'Montserrat',
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -140,18 +142,19 @@ class BloodPressureInfoBottomSheet extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
+                  fontFamily: 'Montserrat',
                   color: color,
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 range,
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

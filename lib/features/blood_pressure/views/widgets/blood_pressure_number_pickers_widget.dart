@@ -61,11 +61,11 @@ class BloodPressureNumberPickersWidget extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontFamily: 'Montserrat',
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           SizedBox(
@@ -94,13 +94,10 @@ class BloodPressureNumberPickersWidget extends StatelessWidget {
                       child: Text(
                         itemValue.toString(),
                         style: TextStyle(
-                          color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                          fontSize: isSelected ? 20 : 16,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                          fontFamily: 'Montserrat',
+                          color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                          fontSize: 24,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
                         ),
                       ),
                     ),

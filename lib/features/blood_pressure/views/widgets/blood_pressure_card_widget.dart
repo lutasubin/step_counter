@@ -54,9 +54,10 @@ class BloodPressureCardWidget extends StatelessWidget {
           child: Text(
             timeText,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
               fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -104,9 +105,10 @@ class BloodPressureCardWidget extends StatelessWidget {
             Text(
               bloodPressure.status,
               style: TextStyle(
+                fontFamily: 'Montserrat',
                 color: statusColor,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(width: 8),
@@ -165,6 +167,7 @@ class BloodPressureCardWidget extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -174,6 +177,7 @@ class BloodPressureCardWidget extends StatelessWidget {
         Text(
           unit,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textSecondary,
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -183,9 +187,10 @@ class BloodPressureCardWidget extends StatelessWidget {
         Text(
           value.toString(),
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
             fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
@@ -205,18 +210,20 @@ class BloodPressureCardWidget extends StatelessWidget {
               Text(
                 bloodPressure.systolic.toString(),
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 bloodPressure.diastolic.toString(),
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -249,9 +256,10 @@ class BloodPressureCardWidget extends StatelessWidget {
                   Text(
                     bloodPressure.status,
                     style: TextStyle(
+                      fontFamily: 'Montserrat',
                       color: statusColor,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -260,6 +268,7 @@ class BloodPressureCardWidget extends StatelessWidget {
               Text(
                 '${bloodPressure.pulse} ${AppStrings.pulseBMP} ${bloodPressure.normalRange}',
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,

@@ -30,9 +30,10 @@ class NewBloodPressureHeaderWidget extends StatelessWidget {
             child: Text(
               AppStrings.newRecord,
               style: TextStyle(
+                fontFamily: 'Montserrat',
                 color: AppColors.textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),

@@ -19,7 +19,9 @@ class BloodPressureSaveButtonWidget extends StatelessWidget {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: controller.isSaving ? null : () => controller.saveBloodPressure(),
+            onPressed: controller.isSaving
+                ? null
+                : () => controller.saveBloodPressure(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.buttonOrange,
               shape: RoundedRectangleBorder(
@@ -39,9 +41,10 @@ class BloodPressureSaveButtonWidget extends StatelessWidget {
                 : const Text(
                     AppStrings.save,
                     style: TextStyle(
+                      fontFamily: 'Montserrat',
                       color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
           ),

@@ -29,9 +29,10 @@ class HeartRateResultSaveButtonWidget extends StatelessWidget {
           child: Text(
             AppStrings.save.toUpperCase(),
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

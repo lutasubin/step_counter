@@ -29,9 +29,10 @@ class HeartRateResultHeaderWidget extends StatelessWidget {
           const Text(
             AppStrings.measure,
             style: TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

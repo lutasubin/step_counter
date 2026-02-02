@@ -39,9 +39,10 @@ class DrinkGoalBottomSheetWidget extends StatelessWidget {
       child: Text(
         AppStrings.drinkingGoal,
         style: TextStyle(
+          fontFamily: 'Montserrat',
           color: AppColors.textPrimary,
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -79,6 +80,7 @@ class DrinkGoalBottomSheetWidget extends StatelessWidget {
                     Text(
                       '$value ml',
                       style: const TextStyle(
+                        fontFamily: 'Montserrat',
                         color: AppColors.textPrimary,
                         fontSize: 16,
                       ),
@@ -118,9 +120,10 @@ class DrinkGoalBottomSheetWidget extends StatelessWidget {
           child: const Text(
             AppStrings.done,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              fontFamily: 'Montserrat',
+              color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

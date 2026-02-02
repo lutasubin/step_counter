@@ -56,9 +56,10 @@ class HeartRateCardWidget extends StatelessWidget {
           child: Text(
             timeText,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
               fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -90,9 +91,10 @@ class HeartRateCardWidget extends StatelessWidget {
           Text(
             heartRate.status,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: greenColor,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -117,9 +119,10 @@ class HeartRateCardWidget extends StatelessWidget {
         Text(
           heartRate.status,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: greenColor,
             fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
@@ -137,9 +140,10 @@ class HeartRateCardWidget extends StatelessWidget {
           Text(
             '${heartRate.bpm}',
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
               fontSize: 56,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(width: 8),
@@ -148,9 +152,10 @@ class HeartRateCardWidget extends StatelessWidget {
           const Text(
             'BMP',
             style: TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -171,15 +176,17 @@ class HeartRateCardWidget extends StatelessWidget {
               Text(
                 '${heartRate.bpm}',
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
                   fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   height: 1.0,
                 ),
               ),
               const Text(
                 'BMP',
                 style: TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,
                   fontSize: 14,
                   height: 1.0,
@@ -215,7 +222,11 @@ class HeartRateCardWidget extends StatelessWidget {
   Widget _buildNormalRange() {
     return Text(
       'Normal range: ${heartRate.normalRange}',
-      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+      style: const TextStyle(
+        fontFamily: 'Montserrat',
+        color: AppColors.textSecondary,
+        fontSize: 12,
+      ),
     );
   }
 }

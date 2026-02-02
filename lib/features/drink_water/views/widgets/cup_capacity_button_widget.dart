@@ -32,9 +32,9 @@ class CupCapacityButtonWidget extends StatelessWidget {
               Text(
                 '${controller.cupCapacity} ml',
                 style: const TextStyle(
+                  fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
               const SizedBox(width: 8),

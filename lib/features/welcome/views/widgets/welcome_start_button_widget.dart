@@ -31,9 +31,10 @@ class WelcomeStartButtonWidget extends StatelessWidget {
           child: const Text(
             'START',
             style: TextStyle(
+              fontFamily: 'Montserrat',
               color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
             ),
           ),

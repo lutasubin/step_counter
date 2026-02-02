@@ -82,9 +82,10 @@ class ReportView extends StatelessWidget {
           () => Text(
             controller.getDateDisplay(),
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

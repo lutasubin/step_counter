@@ -17,9 +17,10 @@ class HomeHeaderWidget extends StatelessWidget {
         child: Text(
           AppStrings.today,
           style: const TextStyle(
+            fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
             fontSize: 26,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),

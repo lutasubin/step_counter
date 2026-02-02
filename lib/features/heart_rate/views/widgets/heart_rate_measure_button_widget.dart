@@ -29,9 +29,10 @@ class HeartRateMeasureButtonWidget extends StatelessWidget {
           child: Text(
             AppStrings.measure.toUpperCase(),
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

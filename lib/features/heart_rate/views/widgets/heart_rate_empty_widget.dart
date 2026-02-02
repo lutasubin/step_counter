@@ -29,10 +29,10 @@ class HeartRateEmptyWidget extends StatelessWidget {
           // Text "No records available!"
           Text(
             'No records available!',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+            style: const TextStyle(
+              fontFamily: 'Montserrat',
+              color: AppColors.textSecondary,
+              fontSize: 16,
             ),
           ),
         ],

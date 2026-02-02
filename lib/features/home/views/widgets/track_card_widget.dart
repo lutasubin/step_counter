@@ -53,9 +53,10 @@ class TrackCardWidget extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -72,7 +73,12 @@ class TrackCardWidget extends StatelessWidget {
   Widget _buildDescription() {
     return Text(
       description,
-      style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+      style: const TextStyle(
+        fontFamily: 'Montserrat',
+        color: AppColors.textSecondary,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 
@@ -95,9 +101,10 @@ class TrackCardWidget extends StatelessWidget {
           child: Text(
             buttonText,
             style: const TextStyle(
+              fontFamily: 'Montserrat',
               color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
