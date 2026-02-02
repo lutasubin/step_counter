@@ -40,25 +40,105 @@ class HomeView extends StatelessWidget {
 
   /// Xây dựng nội dung scrollable
   Widget _buildContent(HomeController controller) {
-    return SingleChildScrollView(
-      child: Obx(
-        () => Column(
+    return Obx(() {
+      // Lấy danh sách cards có data và visible, sắp xếp theo thứ tự đã lưu
+      final visibleCards = controller.cardOrder
+          .where((cardType) => controller.shouldShowCard(cardType))
+          .toList();
+
+      return SingleChildScrollView(
+        child: Column(
           children: [
             const ActivitySummaryCardWidget(),
-            controller.hasHeartRateData
-                ? const HomeHeartRateCardWidget()
-                : const SizedBox.shrink(),
-            controller.hasBloodPressureData
-                ? const HomeBloodPressureCardWidget()
-                : const SizedBox.shrink(),
-            controller.hasDrinkWaterData
-                ? const HomeDrinkWaterCardWidget()
-                : const SizedBox.shrink(),
+            // ReorderableListView cho các home cards
+            if (visibleCards.isNotEmpty)
+              ReorderableListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                onReorder: (oldIndex, newIndex) {
+                  controller.updateCardOrder(oldIndex, newIndex);
+                },
+                // Khi giữ và kéo card, proxyDecorator làm card sáng lên và hơi lắc
+                proxyDecorator: (child, index, animation) {
+                  return AnimatedBuilder(
+                    animation: animation,
+                    builder: (context, child) {
+                      final t = Curves.easeInOut.transform(animation.value);
+                      final scale = 1.0 + 0.04 * t;
+                      final angle = 0.02 * (1 - t);
+                      return Transform.scale(
+                        scale: scale,
+                        child: Transform.rotate(
+                          angle: angle,
+                          child: Opacity(opacity: 0.95, child: child),
+                        ),
+                      );
+                    },
+                    child: child,
+                  );
+                },
+                children: visibleCards.map((cardType) {
+                  return _buildDraggableCard(
+                    key: ValueKey(cardType),
+                    cardType: cardType,
+                    controller: controller,
+                  );
+                }).toList(),
+              ),
             const TryWidgetCardWidget(),
             const SizedBox(height: 20),
           ],
         ),
+      );
+    });
+  }
+
+  /// Xây dựng card có thể drag & drop và dismiss
+  Widget _buildDraggableCard({
+    required Key key,
+    required HomeCardType cardType,
+    required HomeController controller,
+  }) {
+    Widget cardWidget;
+    switch (cardType) {
+      case HomeCardType.heartRate:
+        cardWidget = const HomeHeartRateCardWidget();
+        break;
+      case HomeCardType.bloodPressure:
+        cardWidget = const HomeBloodPressureCardWidget();
+        break;
+      case HomeCardType.drinkWater:
+        cardWidget = const HomeDrinkWaterCardWidget();
+        break;
+    }
+
+    return Dismissible(
+      key: key,
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Icon(Icons.delete, color: Colors.white, size: 32),
       ),
+      onDismissed: (direction) {
+        controller.removeCard(cardType);
+        Get.snackbar(
+          'Đã Ẩn',
+          'Card đã được ẩn. Bạn có thể khôi phục trong Add widget',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.black.withOpacity(0.9),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(12),
+          borderRadius: 12,
+        );
+      },
+      child: cardWidget,
     );
   }
 }

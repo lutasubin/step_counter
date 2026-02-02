@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:step_counter/core/constants/app_assets.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
 import 'package:step_counter/core/constants/app_strings.dart';
+import 'package:step_counter/features/home/views/widgets/home_add_widget_bottom_sheet.dart';
 
 /// Widget card "Try Widgets!"
 class TryWidgetCardWidget extends StatelessWidget {
@@ -57,7 +59,13 @@ class TryWidgetCardWidget extends StatelessWidget {
           SizedBox(
             width: screenSize.width * 0.4,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.bottomSheet(
+                  const HomeAddWidgetBottomSheet(),
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.buttonOrange,
                 shape: RoundedRectangleBorder(

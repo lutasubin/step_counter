@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,20 @@ import 'package:step_counter/features/home/model/activity_data_model.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/report/model/daily_activity_model.dart';
 import 'package:step_counter/features/report/service/report_service.dart';
+
+/// Enum định nghĩa các loại home cards
+enum HomeCardType {
+  heartRate('heart_rate'),
+  bloodPressure('blood_pressure'),
+  drinkWater('drink_water');
+
+  final String value;
+  const HomeCardType(this.value);
+
+  static HomeCardType? fromString(String value) {
+    return HomeCardType.values.firstWhereOrNull((e) => e.value == value);
+  }
+}
 
 /// Controller quản lý logic của home screen
 class HomeController extends GetxController with WidgetsBindingObserver {
@@ -35,6 +50,16 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final _drinkWaterCurrentAmount = 0.obs;
   final _drinkWaterGoal = 2000.obs;
   final _drinkWaterCupCapacity = 250.obs;
+
+  // Quản lý thứ tự và visibility của cards
+  final _cardOrder = <HomeCardType>[].obs;
+  final _cardVisibility = <HomeCardType, bool>{
+    HomeCardType.heartRate: true,
+    HomeCardType.bloodPressure: true,
+    HomeCardType.drinkWater: true,
+  }.obs;
+  static const String _cardOrderKey = 'home_card_order';
+  static const String _cardVisibilityKey = 'home_card_visibility';
 
   StreamSubscription<int>? _stepSubscription;
   Timer? _timer;
@@ -86,10 +111,32 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   /// Drink water cup capacity
   int get drinkWaterCupCapacity => _drinkWaterCupCapacity.value;
 
+  /// Thứ tự các cards
+  List<HomeCardType> get cardOrder => _cardOrder;
+
+  /// Kiểm tra card có visible không
+  bool isCardVisible(HomeCardType cardType) {
+    return _cardVisibility[cardType] ?? true;
+  }
+
+  /// Kiểm tra card có data và visible không
+  bool shouldShowCard(HomeCardType cardType) {
+    if (!isCardVisible(cardType)) return false;
+    switch (cardType) {
+      case HomeCardType.heartRate:
+        return _hasHeartRateData.value;
+      case HomeCardType.bloodPressure:
+        return _hasBloodPressureData.value;
+      case HomeCardType.drinkWater:
+        return _hasDrinkWaterData.value;
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
+    _loadCardOrderAndVisibility();
     _loadData();
     _loadHomeCardsData();
   }
@@ -453,5 +500,90 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   /// Refresh dữ liệu home cards (gọi từ bên ngoài khi cần)
   Future<void> refreshHomeCardsData() async {
     await _loadHomeCardsData();
+  }
+
+  /// Load thứ tự và visibility của cards từ SharedPreferences
+  Future<void> _loadCardOrderAndVisibility() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Load thứ tự
+      final orderJson = prefs.getString(_cardOrderKey);
+      if (orderJson != null) {
+        final List<dynamic> orderList = jsonDecode(orderJson);
+        _cardOrder.value = orderList
+            .map((e) => HomeCardType.fromString(e as String))
+            .whereType<HomeCardType>()
+            .toList();
+      } else {
+        // Default order
+        _cardOrder.value = [
+          HomeCardType.heartRate,
+          HomeCardType.bloodPressure,
+          HomeCardType.drinkWater,
+        ];
+      }
+
+      // Load visibility
+      final visibilityJson = prefs.getString(_cardVisibilityKey);
+      if (visibilityJson != null) {
+        final Map<String, dynamic> visibilityMap = jsonDecode(visibilityJson);
+        _cardVisibility.value = visibilityMap.map(
+          (key, value) => MapEntry(
+            HomeCardType.fromString(key) ?? HomeCardType.heartRate,
+            value as bool,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error loading card order and visibility: $e');
+      // Default values
+      _cardOrder.value = [
+        HomeCardType.heartRate,
+        HomeCardType.bloodPressure,
+        HomeCardType.drinkWater,
+      ];
+    }
+  }
+
+  /// Lưu thứ tự và visibility của cards vào SharedPreferences
+  Future<void> _saveCardOrderAndVisibility() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Save order
+      final orderJson = jsonEncode(_cardOrder.map((e) => e.value).toList());
+      await prefs.setString(_cardOrderKey, orderJson);
+
+      // Save visibility
+      final visibilityMap = _cardVisibility.map(
+        (key, value) => MapEntry(key.value, value),
+      );
+      final visibilityJson = jsonEncode(visibilityMap);
+      await prefs.setString(_cardVisibilityKey, visibilityJson);
+    } catch (e) {
+      print('Error saving card order and visibility: $e');
+    }
+  }
+
+  /// Cập nhật thứ tự cards sau khi drag & drop
+  Future<void> updateCardOrder(int oldIndex, int newIndex) async {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final item = _cardOrder.removeAt(oldIndex);
+    _cardOrder.insert(newIndex, item);
+    await _saveCardOrderAndVisibility();
+  }
+
+  /// Ẩn/hiện card
+  Future<void> toggleCardVisibility(HomeCardType cardType) async {
+    _cardVisibility[cardType] = !(_cardVisibility[cardType] ?? true);
+    await _saveCardOrderAndVisibility();
+  }
+
+  /// Xóa card (ẩn card)
+  Future<void> removeCard(HomeCardType cardType) async {
+    await toggleCardVisibility(cardType);
   }
 }
