@@ -5,10 +5,11 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelper {
   static const String _databaseName = 'step_counter.db';
   static const int _databaseVersion =
-      3; // Tăng version để thêm bảng blood_pressures
+      4; // Tăng version để thêm bảng drink_water_records
   static const String _tableName = 'daily_activities';
   static const String _heartRateTableName = 'heart_rates';
   static const String _bloodPressureTableName = 'blood_pressures';
+  static const String _drinkWaterTableName = 'drink_water_records';
 
   static Database? _database;
 
@@ -79,6 +80,21 @@ class DatabaseHelper {
     await db.execute('''
       CREATE INDEX idx_blood_pressure_date_time ON $_bloodPressureTableName(date_time)
     ''');
+
+    // Tạo bảng drink_water_records
+    await db.execute('''
+      CREATE TABLE $_drinkWaterTableName (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date_time TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    // Tạo index cho date_time
+    await db.execute('''
+      CREATE INDEX idx_drink_water_date_time ON $_drinkWaterTableName(date_time)
+    ''');
   }
 
   /// Upgrade database khi version thay đổi
@@ -122,6 +138,23 @@ class DatabaseHelper {
         CREATE INDEX IF NOT EXISTS idx_blood_pressure_date_time ON $_bloodPressureTableName(date_time)
       ''');
     }
+
+    if (oldVersion < 4) {
+      // Thêm bảng drink_water_records cho version 4
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS $_drinkWaterTableName (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          date_time TEXT NOT NULL,
+          amount INTEGER NOT NULL,
+          created_at TEXT NOT NULL
+        )
+      ''');
+
+      // Tạo index
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_drink_water_date_time ON $_drinkWaterTableName(date_time)
+      ''');
+    }
   }
 
   /// Đóng database
@@ -135,4 +168,7 @@ class DatabaseHelper {
 
   /// Getter cho blood pressure table name (để sử dụng trong repository)
   static String get bloodPressureTableName => _bloodPressureTableName;
+
+  /// Getter cho drink water table name (để sử dụng trong repository)
+  static String get drinkWaterTableName => _drinkWaterTableName;
 }

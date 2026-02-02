@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
 import 'package:step_counter/core/constants/app_strings.dart';
 import 'package:step_counter/features/drink_water/viewmodels/drink_water_settings_controller.dart';
@@ -24,23 +25,35 @@ class DrinkWaterSettingsSaveButtonWidget extends StatelessWidget {
         mediaQuery.size.width * 0.05,
         mediaQuery.padding.bottom + 16,
       ),
-      child: ElevatedButton(
-        onPressed: controller.saveSettings,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.buttonOrange,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: Obx(
+        () => ElevatedButton(
+          onPressed: controller.isSaving ? null : controller.saveSettings,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.buttonOrange,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            disabledBackgroundColor: AppColors.buttonOrange.withOpacity(0.6),
           ),
-        ),
-        child: const Text(
-          AppStrings.save,
-          style: TextStyle(
-            fontFamily: 'Montserrat',
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
+          child: controller.isSaving
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Text(
+                  AppStrings.save,
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
         ),
       ),
     );

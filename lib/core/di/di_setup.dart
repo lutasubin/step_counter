@@ -2,6 +2,9 @@ import 'package:get_it/get_it.dart';
 import 'package:step_counter/core/services/notification_service.dart';
 import 'package:step_counter/features/blood_pressure/repositories/blood_pressure_repository.dart';
 import 'package:step_counter/features/blood_pressure/repositories/blood_pressure_repository_impl.dart';
+import 'package:step_counter/features/drink_water/repositories/drink_water_repository.dart';
+import 'package:step_counter/features/drink_water/repositories/drink_water_repository_impl.dart';
+import 'package:step_counter/features/drink_water/service/drink_water_notification_service.dart';
 import 'package:step_counter/features/heart_rate/repositories/heart_rate_repository.dart';
 import 'package:step_counter/features/heart_rate/repositories/heart_rate_repository_impl.dart';
 import 'package:step_counter/features/heart_rate/service/heart_rate_measurement_service.dart';
@@ -31,6 +34,12 @@ void setupDI() {
   );
   getIt.registerLazySingleton<BloodPressureRepository>(
     () => BloodPressureRepositoryImpl(),
+  );
+  getIt.registerLazySingleton<DrinkWaterRepository>(
+    () => DrinkWaterRepositoryImpl(),
+  );
+  getIt.registerLazySingleton<DrinkWaterNotificationService>(
+    () => DrinkWaterNotificationService(),
   );
 
   // Đăng ký services

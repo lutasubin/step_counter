@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:step_counter/core/di/di_setup.dart';
 import 'package:step_counter/core/router/app_router.dart';
 import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/core/services/notification_service.dart';
+import 'package:step_counter/features/drink_water/service/drink_water_notification_service.dart';
 
 /// Widget chính của ứng dụng
 class MyApp extends StatefulWidget {
@@ -18,6 +20,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     // Khởi tạo notification service khi app khởi động
     NotificationService().initialize();
+    // Khởi tạo drink water notification service
+    getIt<DrinkWaterNotificationService>().initialize();
   }
 
   @override

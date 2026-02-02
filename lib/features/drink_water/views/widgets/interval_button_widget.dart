@@ -30,7 +30,9 @@ class IntervalButtonWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${controller.interval} hour',
+                controller.intervalType == 'minutes'
+                    ? '${controller.interval} min'
+                    : '${controller.interval} hour',
                 style: const TextStyle(
                   fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
