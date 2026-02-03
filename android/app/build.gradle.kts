@@ -1,8 +1,17 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // Flutter Gradle Plugin (bắt buộc đặt sau Android + Kotlin)
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -14,8 +23,8 @@ android {
         applicationId = "com.mobileai.countersteppro"
         minSdk = 24 
         targetSdk = 35 
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = 1
+        versionName = "1.0"
     }
 
     compileOptions {
@@ -31,10 +40,44 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                // Trim whitespace từ keyAlias để tránh lỗi
+                keyAlias = (keystoreProperties["keyAlias"] as String).trim()
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+             // Debug build không dùng keystore release
+            // Sử dụng keystore debug mặc định
+
+            // BẬT ProGuard cho debug để test lỗi giống bản release
+            isMinifyEnabled = true
+            // Tắt shrinkResources để log dễ đọc hơn, build nhanh hơn
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        
         release {
-            // tạm dùng debug key cho release
-            signingConfig = signingConfigs.getByName("debug")
+            // Release mode: sử dụng release signing config từ key.properties
+            signingConfig = signingConfigs.getByName("release")
+            
+            // Enable ProGuard/R8 để tối ưu app
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
