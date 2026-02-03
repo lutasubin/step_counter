@@ -1,7 +1,9 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:step_counter/features/drink_water/service/drink_water_alarm_callback.dart';
 
 /// Service quản lý notifications nhắc nhở uống nước
 class DrinkWaterNotificationService {
@@ -65,10 +67,13 @@ class DrinkWaterNotificationService {
   /// Request permission cho notification
   Future<void> _requestNotificationPermission() async {
     try {
-      final status = await Permission.notification.status;
-      if (status.isDenied) {
+      // Request notification permission (Android 13+)
+      final notificationStatus = await Permission.notification.status;
+      if (notificationStatus.isDenied) {
         await Permission.notification.request();
       }
+      // KHÔNG request SCHEDULE_EXACT_ALARM vì dùng exact: false
+      // Inexact alarm vẫn hoạt động tốt khi app bị kill, chỉ có thể delay vài phút
     } catch (e) {
       print('Warning: Could not request notification permission: $e');
     }
@@ -316,58 +321,48 @@ class DrinkWaterNotificationService {
     }
   }
 
-  /// Schedule một notification cụ thể
+  /// Schedule một notification cụ thể bằng AndroidAlarmManager
+  /// Dùng AndroidAlarmManager để notification hoạt động khi app bị kill
+  /// Dùng exact: false để tránh Google Play reject (inexact vẫn hoạt động tốt)
   Future<void> _scheduleNotification({
     required int id,
     required DateTime scheduledTime,
   }) async {
-    // Cấu hình Android notification details
-    const androidDetails = AndroidNotificationDetails(
-      _channelId,
-      _channelName,
-      channelDescription: _channelDescription,
-      importance: Importance.high,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-      icon: '@mipmap/ic_launcher',
-    );
+    try {
+      // Tính thời gian delay từ bây giờ đến scheduledTime
+      final now = DateTime.now();
+      final delay = scheduledTime.difference(now);
 
-    // Cấu hình iOS notification details (không cần vì chỉ Android)
-    const iosDetails = DarwinNotificationDetails();
+      // Chỉ schedule nếu thời gian trong tương lai
+      if (delay.isNegative) {
+        print(
+          'Warning: Scheduled time is in the past, skipping: $scheduledTime',
+        );
+        return;
+      }
 
-    const notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+      print(
+        'Schedule alarm: ID=$id, Time=$scheduledTime, Delay=${delay.inSeconds}s',
+      );
 
-    // Schedule notification theo đúng doc flutter_local_notifications
-    final scheduledTZDateTime = _convertToTZDateTime(scheduledTime);
+      // Schedule alarm bằng AndroidAlarmManager
+      // Dùng exact: false để tránh Google Play reject
+      // Inexact alarm vẫn hoạt động tốt khi app bị kill, chỉ có thể delay vài phút
+      // Điều này hoàn toàn chấp nhận được cho reminder uống nước
+      await AndroidAlarmManager.oneShotAt(
+        scheduledTime,
+        id,
+        drinkWaterAlarmCallback,
+        exact: false, // Dùng inexact để an toàn với Google Play
+        wakeup: true,
+        allowWhileIdle: true,
+      );
 
-    // Chỉ dùng inexact alarm để tránh Google Play reject
-    // Inexact alarm vẫn hoạt động tốt cho reminder, chỉ có thể delay vài phút
-    // Điều này hoàn toàn chấp nhận được cho reminder uống nước
-    final scheduleMode = AndroidScheduleMode.inexactAllowWhileIdle;
-
-    // Schedule notification theo đúng API của flutter_local_notifications
-    // Theo doc: zonedSchedule với androidScheduleMode là required parameter
-    // Dùng matchDateTimeComponents để lặp lại hàng ngày cùng giờ
-    await _notifications.zonedSchedule(
-      id: id,
-      title: 'Nhắc nhở uống nước',
-      body: 'Đã đến lúc uống nước rồi! Hãy uống nước để duy trì sức khỏe.',
-      scheduledDate: scheduledTZDateTime,
-      notificationDetails: notificationDetails,
-      androidScheduleMode: scheduleMode,
-      matchDateTimeComponents:
-          DateTimeComponents.time, // Lặp lại mỗi ngày cùng giờ
-    );
-  }
-
-  /// Convert DateTime sang TZDateTime (timezone aware)
-  /// Sử dụng local timezone
-  tz.TZDateTime _convertToTZDateTime(DateTime dateTime) {
-    return tz.TZDateTime.from(dateTime, tz.local);
+      print('✅ Alarm scheduled successfully: ID=$id');
+    } catch (e, stackTrace) {
+      print('❌ Error scheduling alarm: $e');
+      print('Stack trace: $stackTrace');
+    }
   }
 
   // Lưu danh sách notification IDs đã schedule để cancel nhanh
@@ -380,16 +375,23 @@ class DrinkWaterNotificationService {
     }
 
     try {
-      // Nếu có danh sách IDs, cancel từng cái (nhanh hơn)
+      // Nếu có danh sách IDs, cancel từng alarm
       if (_scheduledNotificationIds.isNotEmpty) {
+        print('Cancelling ${_scheduledNotificationIds.length} alarms...');
         // Cancel song song để nhanh hơn
         await Future.wait(
-          _scheduledNotificationIds.map((id) => _notifications.cancel(id: id)),
+          _scheduledNotificationIds.map((id) async {
+            try {
+              await AndroidAlarmManager.cancel(id);
+            } catch (e) {
+              print('Warning: Could not cancel alarm $id: $e');
+            }
+          }),
         );
         _scheduledNotificationIds.clear();
+        print('✅ All alarms cancelled');
       } else {
-        // Fallback: cancel tất cả notifications (nhanh nhất)
-        await _notifications.cancelAll();
+        print('No alarms to cancel');
       }
     } catch (e) {
       print('Warning: Could not cancel reminders: $e');
