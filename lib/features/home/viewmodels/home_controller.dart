@@ -435,7 +435,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       final heartRates = await _heartRateRepository.getTodayHeartRate();
       if (heartRates.isEmpty) {
-        _hasHeartRateData.value = false;
+        // Card vẫn hiển thị ngay cả khi không có data hôm nay
+        _hasHeartRateData.value = true;
         _latestHeartRate.value = null;
         return;
       }
@@ -445,7 +446,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       _hasHeartRateData.value = true;
     } catch (e) {
       print('Error loading heart rate data: $e');
-      _hasHeartRateData.value = false;
+      _hasHeartRateData.value = true; // Card vẫn hiển thị khi có lỗi
       _latestHeartRate.value = null;
     }
   }
@@ -456,7 +457,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       final bloodPressure = await _bloodPressureRepository
           .getTodayBloodPressure();
       if (bloodPressure == null) {
-        _hasBloodPressureData.value = false;
+        // Card vẫn hiển thị ngay cả khi không có data hôm nay
+        _hasBloodPressureData.value = true;
         _latestBloodPressure.value = null;
         return;
       }
@@ -464,7 +466,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       _hasBloodPressureData.value = true;
     } catch (e) {
       print('Error loading blood pressure data: $e');
-      _hasBloodPressureData.value = false;
+      _hasBloodPressureData.value = true; // Card vẫn hiển thị khi có lỗi
       _latestBloodPressure.value = null;
     }
   }
@@ -489,8 +491,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       );
       _drinkWaterCurrentAmount.value = currentAmount;
 
-      // Card chỉ hiển thị nếu có records của ngày hôm nay (đã uống nước hôm nay)
-      _hasDrinkWaterData.value = currentAmount > 0;
+      // Card hiển thị nếu đã có settings (goal hoặc cupCapacity) hoặc có data hôm nay
+      // Kiểm tra xem có bất kỳ key nào liên quan đến drink_water trong SharedPreferences không
+      final hasAnyDrinkWaterKey = prefs.getKeys().any(
+        (key) => key.startsWith('drink_water'),
+      );
+      _hasDrinkWaterData.value = hasAnyDrinkWaterKey || currentAmount > 0;
     } catch (e) {
       print('Error loading drink water data: $e');
       _hasDrinkWaterData.value = false;

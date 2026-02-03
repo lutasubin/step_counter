@@ -17,8 +17,7 @@ class HomeBloodPressureCardWidget extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Obx(() {
-      final bloodPressure = controller.latestBloodPressure;
-      if (bloodPressure == null) {
+      if (!controller.hasBloodPressureData) {
         return const SizedBox.shrink();
       }
 
@@ -34,7 +33,7 @@ class HomeBloodPressureCardWidget extends StatelessWidget {
           children: [
             _buildHeader(),
             const SizedBox(height: 16),
-            _buildContent(bloodPressure),
+            _buildContent(controller.latestBloodPressure),
           ],
         ),
       );
@@ -92,7 +91,86 @@ class HomeBloodPressureCardWidget extends StatelessWidget {
   }
 
   /// Xây dựng content với icon graphic bên trái và data card bên phải
-  Widget _buildContent(BloodPressureModel bloodPressure) {
+  Widget _buildContent(BloodPressureModel? bloodPressure) {
+    // Nếu không có data, hiển thị "No data today"
+    if (bloodPressure == null) {
+      return Row(
+        children: [
+          // Bên trái: Graphic icon (blood pressure illustration)
+          Expanded(
+            flex: 2,
+            child: Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(AppAssets.iconBloodCard, fit: BoxFit.contain),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Bên phải: Content card với background homeBackground
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.homeBackground,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // "No data today" text
+                  Text(
+                    'No data today',
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Record button
+                  SizedBox(
+                    width: 128,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.toNamed(RouteNames.bloodPressure);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.cardBackground,
+                        side: BorderSide(
+                          color: AppColors.loadingBarInactive,
+                          width: 1,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        AppStrings.record,
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Có data, hiển thị bình thường
     final statusColor = _getStatusColor(bloodPressure.status);
     final timeText = DateFormat('h:mm a').format(bloodPressure.dateTime);
 

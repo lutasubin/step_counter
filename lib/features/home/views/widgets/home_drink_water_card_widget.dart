@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:step_counter/core/constants/app_assets.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
+import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/core/di/di_setup.dart';
 import 'package:step_counter/features/drink_water/model/drink_water_record_model.dart';
 import 'package:step_counter/features/drink_water/repositories/drink_water_repository.dart';
@@ -45,29 +46,38 @@ class HomeDrinkWaterCardWidget extends StatelessWidget {
     });
   }
 
-  /// Xây dựng header với icon, title và arrow
+  /// Xây dựng header với icon, title và arrow (có thể tap để điều hướng)
   Widget _buildHeader() {
-    return Row(
-      children: [
-        SvgPicture.asset(AppAssets.iconDrinkCard, width: 15, height: 15),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Text(
-            'Drink water',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(RouteNames.drinkWaterSettings);
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            SvgPicture.asset(AppAssets.iconDrinkCard, width: 15, height: 15),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Drink water',
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
-          ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.buttonOrange,
+              size: 16,
+            ),
+          ],
         ),
-        const Icon(
-          Icons.arrow_forward_ios,
-          color: AppColors.buttonOrange,
-          size: 16,
-        ),
-      ],
+      ),
     );
   }
 
