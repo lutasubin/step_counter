@@ -479,7 +479,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       final goal = prefs.getInt('drink_water_goal');
       final cupCapacity = prefs.getInt('drink_water_cup_capacity');
 
-      // Nếu đã có settings, dùng giá trị đó, nếu không dùng default
+      // Nếu chưa setting thì dùng default: goal = 2000ml, cup = 250ml
       _drinkWaterGoal.value = goal ?? 2000;
       _drinkWaterCupCapacity.value = cupCapacity ?? 250;
 
@@ -491,12 +491,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       );
       _drinkWaterCurrentAmount.value = currentAmount;
 
-      // Card hiển thị nếu đã có settings (goal hoặc cupCapacity) hoặc có data hôm nay
-      // Kiểm tra xem có bất kỳ key nào liên quan đến drink_water trong SharedPreferences không
-      final hasAnyDrinkWaterKey = prefs.getKeys().any(
-        (key) => key.startsWith('drink_water'),
-      );
-      _hasDrinkWaterData.value = hasAnyDrinkWaterKey || currentAmount > 0;
+      // Luôn hiển thị card drink water trên home:
+      // - Mỗi ngày mới, currentAmount sẽ là 0 → UI hiển thị 0/goal ml như thiết kế
+      // - Nếu user chưa từng setting thì dùng default 2000ml & 250ml ở trên
+      _hasDrinkWaterData.value = true;
     } catch (e) {
       print('Error loading drink water data: $e');
       _hasDrinkWaterData.value = false;

@@ -92,9 +92,8 @@ class BloodPressureInfoBottomSheet extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  // Đóng bottom sheet và quay về màn hình blood pressure
-                  Get.back(); // Đóng info bottom sheet
-                  Get.back(); // Quay về màn hình blood pressure list
+                  // Chỉ đóng bottom sheet Information, giữ nguyên màn hiện tại
+                  Get.back();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.buttonOrange,

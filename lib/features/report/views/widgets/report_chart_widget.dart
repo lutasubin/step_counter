@@ -98,6 +98,10 @@ class ReportChartWidget extends StatelessWidget {
         }
       }
 
+      final lineColor = controller.isDrinkWaterMode
+          ? const Color(0xFF2F7BFF)
+          : AppColors.buttonOrange;
+
       return LineChart(
         LineChartData(
           gridData: FlGridData(
@@ -203,7 +207,7 @@ class ReportChartWidget extends StatelessWidget {
                   LineChartBarData(
                     spots: spots,
                     isCurved: true,
-                    color: AppColors.buttonOrange, // Đường line màu cam
+                    color: lineColor, // Đường line
                     barWidth: 3,
                     dotData: FlDotData(
                       show: true,
@@ -214,7 +218,7 @@ class ReportChartWidget extends StatelessWidget {
                             radius: 6,
                             color: Colors.white, // Màu trắng bên trong
                             strokeWidth: 2,
-                            strokeColor: AppColors.buttonOrange, // Viền cam
+                            strokeColor: lineColor, // Viền
                           );
                         }
                         return FlDotCirclePainter(
@@ -264,7 +268,7 @@ class ReportChartWidget extends StatelessWidget {
                   hasData)
                 VerticalLine(
                   x: controller.selectedIndex.toDouble(),
-                  color: AppColors.buttonOrange, // Đường dọc chọn điểm màu cam
+                  color: lineColor, // Đường dọc chọn điểm
                   strokeWidth: 2,
                   label: VerticalLineLabel(show: false),
                 ),
@@ -345,6 +349,10 @@ class ReportChartWidget extends StatelessWidget {
         yIntervals = [0, 2500, 5000, 7500, 10000, 15000];
         horizontalInterval = 2500.0; // Fixed interval cho Month view
       }
+
+      final lineColor = controller.isDrinkWaterMode
+          ? const Color(0xFF2F7BFF)
+          : AppColors.buttonOrange;
 
       return LineChart(
         LineChartData(
@@ -484,7 +492,7 @@ class ReportChartWidget extends StatelessWidget {
                     // Spots đã được filter ở trên (Month view chỉ có ngày có step > 0)
                     spots: spots,
                     isCurved: true,
-                    color: AppColors.buttonOrange, // Đường line màu cam
+                    color: lineColor, // Đường line
                     barWidth: 3,
                     dotData: FlDotData(
                       show: true,
@@ -568,7 +576,7 @@ class ReportChartWidget extends StatelessWidget {
                   hasData)
                 VerticalLine(
                   x: controller.selectedIndex.toDouble(),
-                  color: AppColors.buttonOrange, // Đường dọc chọn điểm màu cam
+                  color: lineColor, // Đường dọc chọn điểm
                   strokeWidth: 2,
                   label: VerticalLineLabel(show: false),
                 ),
@@ -661,6 +669,12 @@ class ReportChartWidget extends StatelessWidget {
     final chartHeight = 200.0; // Approximate chart height
     final topPosition = chartHeight - (steps / maxY) * chartHeight - 60;
 
+    final isDrink = controller.isDrinkWaterMode;
+    final tooltipColor = isDrink
+        ? const Color(0xFF2F7BFF)
+        : AppColors.buttonOrange;
+    final unitText = isDrink ? AppStrings.ml : AppStrings.step;
+
     return Positioned(
       left: leftPosition.clamp(0.0, chartWidth - 80),
       top: topPosition.clamp(0.0, chartHeight - 70),
@@ -670,7 +684,7 @@ class ReportChartWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.buttonOrange,
+              color: tooltipColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -686,9 +700,9 @@ class ReportChartWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                const Text(
-                  AppStrings.step,
-                  style: TextStyle(
+                Text(
+                  unitText,
+                  style: const TextStyle(
                     fontFamily: 'Montserrat',
                     color: Colors.white,
                     fontSize: 12,
@@ -700,7 +714,7 @@ class ReportChartWidget extends StatelessWidget {
           const SizedBox(height: 0),
           CustomPaint(
             size: const Size(20, 8),
-            painter: _TrianglePointerPainter(color: AppColors.buttonOrange),
+            painter: _TrianglePointerPainter(color: tooltipColor),
           ),
         ],
       ),

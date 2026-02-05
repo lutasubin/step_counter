@@ -57,10 +57,20 @@ class HomeBloodPressureCardWidget extends StatelessWidget {
             ),
           ),
         ),
-        const Icon(
-          Icons.arrow_forward_ios,
-          color: AppColors.buttonOrange,
-          size: 16,
+        // Icon arrow có thể bấm để vào màn danh sách Blood pressure
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(RouteNames.bloodPressure);
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.all(4),
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.buttonOrange,
+              size: 16,
+            ),
+          ),
         ),
       ],
     );
@@ -132,13 +142,13 @@ class HomeBloodPressureCardWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Record button
+                  // Record button -> chuyển đến màn tạo record mới (New blood pressure)
                   SizedBox(
                     width: 128,
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.toNamed(RouteNames.bloodPressure);
+                        Get.toNamed(RouteNames.newBloodPressure);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.cardBackground,
@@ -284,14 +294,15 @@ class HomeBloodPressureCardWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Record button
+
+                // Record button -> chuyển đến màn tạo record mới (New blood pressure)
                 Center(
                   child: SizedBox(
                     width: 128,
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.toNamed(RouteNames.bloodPressure);
+                        Get.toNamed(RouteNames.newBloodPressure);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.cardBackground,

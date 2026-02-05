@@ -35,10 +35,10 @@ class SettingView extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(20, 20, 20, 16),
       child: Text(
         AppStrings.settingTitle,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Montserrat',
           color: AppColors.textPrimary,
-          fontSize: 26,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
       ),

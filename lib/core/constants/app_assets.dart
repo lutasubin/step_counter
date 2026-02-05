@@ -21,6 +21,11 @@ class AppAssets {
   static const String iconBloodCard = 'assets/images/blood_icon.png';
   static const String iconDrinkCard = 'assets/svg/Drink_icon.svg';
 
+  // Drink water report icons
+  static const String iconGoalDrink = 'assets/svg/goal_drink.svg';
+  static const String iconMlDrink = 'assets/svg/ml_drink.svg';
+  static const String iconTimeDrink = 'assets/svg/time_drink.svg';
+
   // Activity metrics icons
   static const String iconFire = 'assets/svg/fire.svg';
   static const String iconKilomet = 'assets/svg/kilomet.svg';

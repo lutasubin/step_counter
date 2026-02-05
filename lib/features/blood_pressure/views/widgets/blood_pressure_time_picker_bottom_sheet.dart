@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
 import 'package:step_counter/core/constants/app_strings.dart';
 import 'package:step_counter/features/blood_pressure/viewmodels/new_blood_pressure_controller.dart';
-import 'package:step_counter/features/blood_pressure/views/widgets/blood_pressure_info_bottom_sheet.dart';
 
 /// Bottom sheet để chọn date và time
 class BloodPressureTimePickerBottomSheet extends StatefulWidget {
@@ -93,19 +92,8 @@ class _BloodPressureTimePickerBottomSheetState
     final controller = Get.find<NewBloodPressureController>();
     controller.dateTime = _selectedDateTime;
 
-    // Đóng bottom sheet chọn thời gian
+    // Chỉ đóng bottom sheet chọn thời gian, không show Information ở đây nữa
     Get.back();
-
-    // Hiển thị bottom sheet thông báo từ dưới lên sau khi đóng
-    Future.delayed(const Duration(milliseconds: 300), () {
-      Get.bottomSheet(
-        const BloodPressureInfoBottomSheet(),
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        isDismissible: false,
-        enableDrag: false,
-      );
-    });
   }
 
   @override

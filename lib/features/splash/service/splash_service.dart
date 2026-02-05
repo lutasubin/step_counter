@@ -15,4 +15,14 @@ class SplashService {
   Future<void> setWelcomeSeen() async {
     await _repository.setWelcomeSeen();
   }
+
+  /// Kiểm tra đã hoàn thành trải nghiệm homeFirst chưa
+  Future<bool> hasCompletedHomeFirst() async {
+    return await _repository.hasCompletedHomeFirst();
+  }
+
+  /// Đánh dấu đã hoàn thành trải nghiệm homeFirst
+  Future<void> setHomeFirstCompleted() async {
+    await _repository.setHomeFirstCompleted();
+  }
 }

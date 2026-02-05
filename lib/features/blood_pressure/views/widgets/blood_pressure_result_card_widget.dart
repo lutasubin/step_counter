@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:step_counter/core/constants/app_colors.dart';
 import 'package:step_counter/core/constants/app_strings.dart';
 import 'package:step_counter/features/blood_pressure/viewmodels/new_blood_pressure_controller.dart';
+import 'package:step_counter/features/blood_pressure/views/widgets/blood_pressure_info_bottom_sheet.dart';
 
 /// Widget hiển thị kết quả blood pressure với range indicator
 class BloodPressureResultCardWidget extends StatelessWidget {
@@ -302,10 +303,26 @@ class BloodPressureResultCardWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        const Icon(
-          Icons.info_outline,
-          color: AppColors.textSecondary,
-          size: 18,
+        // Icon info: bấm để mở bottom sheet Information
+        InkWell(
+          onTap: () {
+            Get.bottomSheet(
+              const BloodPressureInfoBottomSheet(),
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              isDismissible: false,
+              enableDrag: false,
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: const Padding(
+            padding: EdgeInsets.all(4),
+            child: Icon(
+              Icons.info_outline,
+              color: AppColors.textSecondary,
+              size: 18,
+            ),
+          ),
         ),
       ],
     );

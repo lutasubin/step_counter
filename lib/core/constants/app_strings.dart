@@ -24,7 +24,7 @@ class AppStrings {
       'Track your blood pressure, view trends, and support your heart health.';
   static const String record = 'Record';
 
-  static const String drinkWater = 'Drink water';
+  static const String drinkWater = 'Drink water setting';
   static const String drinkWaterDesc =
       'Set water intake goals, receive reminders, and track your daily hydration easily.';
   static const String setting = 'Setting';
@@ -56,6 +56,12 @@ class AppStrings {
   static const String avgPerDay = 'Avg / day';
   static const String totalStep = 'Total step';
   static const String step = 'Step';
+  // Drink water report
+  static const String totalWater = 'Total water(ml)';
+  static const String ml = 'ml';
+  static const String goalMl = 'Goal(ml)';
+  static const String cupMl = 'Cup(ml)';
+  static const String remindLabel = 'Remind';
 
   // Heart rate screen
   static const String heartRate = 'Heart rate';

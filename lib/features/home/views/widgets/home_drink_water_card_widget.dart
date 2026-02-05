@@ -40,6 +40,8 @@ class HomeDrinkWaterCardWidget extends StatelessWidget {
             _buildHeader(),
             const SizedBox(height: 16),
             _buildContent(currentAmount, goal, progress, cupCapacity),
+            const SizedBox(height: 16),
+            _buildReportSection(),
           ],
         ),
       );
@@ -206,6 +208,100 @@ class HomeDrinkWaterCardWidget extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  /// Xây dựng phần Report bên dưới giống thiết kế (Report + Detail + 7 ngày)
+  Widget _buildReportSection() {
+    // Danh sách label ngày trong tuần theo thiết kế
+    const weekLabels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+    final todayWeekday = DateTime.now().weekday; // 1 = Monday, 7 = Sunday
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text(
+              'Report',
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            GestureDetector(
+              onTap: () {
+                // Điều hướng sang màn report drink water (dùng chart giống bước chân)
+                Get.toNamed(
+                  RouteNames.drinkWaterReport,
+                  arguments: 'drink-water',
+                );
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                children: const [
+                  Text(
+                    'Detail',
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      color: AppColors.buttonOrange,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: AppColors.buttonOrange,
+                    size: 14,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(7, (index) {
+            // Map index (0-6) sang weekday (1-7)
+            final weekday = index + 1;
+            final isToday = weekday == todayWeekday;
+
+            return Column(
+              children: [
+                Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.homeBackground,
+                    border: Border.all(
+                      // Ngày hôm nay được highlight bằng màu cam và viền dày hơn
+                      color: isToday
+                          ? AppColors.buttonOrange
+                          : AppColors.loadingBarInactive,
+                      width: isToday ? 3 : 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  weekLabels[index],
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: AppColors.textSecondary,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            );
+          }),
         ),
       ],
     );

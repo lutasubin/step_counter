@@ -23,7 +23,7 @@ class DrinkWaterSettingsHeaderWidget extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Montserrat',
                 color: AppColors.textPrimary,
-                fontSize: 26,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
             ),

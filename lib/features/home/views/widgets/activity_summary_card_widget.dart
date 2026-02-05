@@ -203,8 +203,8 @@ class ActivitySummaryCardWidget extends StatelessWidget {
             AppStrings.report,
             style: const TextStyle(
               fontFamily: 'Montserrat',
-              color: AppColors.buttonOrange,
-              fontSize: 14,
+              color: AppColors.textPrimary,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -219,7 +219,7 @@ class ActivitySummaryCardWidget extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Montserrat',
                   color: AppColors.buttonOrange,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),

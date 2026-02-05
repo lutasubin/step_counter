@@ -10,9 +10,12 @@ class WelcomeController extends GetxController {
   WelcomeController({SplashService? splashService})
     : _splashService = splashService ?? getIt<SplashService>();
 
-  /// Điều hướng đến màn hình home
+  /// Điều hướng đến màn hình home first (lần đầu)
   Future<void> navigateToHome() async {
     await _splashService.setWelcomeSeen();
-    Get.offNamed(RouteNames.home);
+    // Đánh dấu đã hoàn thành trải nghiệm homeFirst ngay khi vào homeFirst lần đầu
+    // Để lần mở app tiếp theo sẽ đi thẳng đến home
+    await _splashService.setHomeFirstCompleted();
+    Get.offNamed(RouteNames.homeFirst);
   }
 }

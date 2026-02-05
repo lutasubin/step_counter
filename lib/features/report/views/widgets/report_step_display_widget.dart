@@ -15,21 +15,24 @@ class ReportStepDisplayWidget extends StatelessWidget {
     return Obx(() {
       if (controller.selectedPeriod == PeriodType.day) {
         // Với Day view, hiển thị tổng số bước của ngày, không phải chỉ khoảng đầu tiên
-        final steps = controller.getTotalSteps();
-        return _buildDayView(steps);
+        final value = controller.getTotalSteps();
+        return _buildDayView(value);
       } else {
-        final avgSteps = controller.getAverageSteps().toInt();
-        final totalSteps = controller.getTotalSteps();
-        return _buildWeekMonthView(avgSteps, totalSteps);
+        final avgValue = controller.getAverageSteps().toInt();
+        final totalValue = controller.getTotalSteps();
+        return _buildWeekMonthView(avgValue, totalValue);
       }
     });
   }
 
-  Widget _buildDayView(int steps) {
+  Widget _buildDayView(int value) {
+    final isDrink = controller.isDrinkWaterMode;
+    final unitText = isDrink ? AppStrings.ml : AppStrings.step;
+
     return Column(
       children: [
         Text(
-          '$steps',
+          '$value',
           style: const TextStyle(
             fontFamily: 'Montserrat',
             color: AppColors.textPrimary,
@@ -39,7 +42,7 @@ class ReportStepDisplayWidget extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          AppStrings.step,
+        unitText,
           style: const TextStyle(
             fontFamily: 'Montserrat',
             color: AppColors.textSecondary,
@@ -50,7 +53,10 @@ class ReportStepDisplayWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildWeekMonthView(int avgSteps, int totalSteps) {
+  Widget _buildWeekMonthView(int avgValue, int totalValue) {
+    final isDrink = controller.isDrinkWaterMode;
+    final totalLabel = isDrink ? AppStrings.totalWater : AppStrings.totalStep;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -58,7 +64,7 @@ class ReportStepDisplayWidget extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                '$avgSteps',
+                '$avgValue',
                 style: const TextStyle(
                   fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
@@ -82,7 +88,7 @@ class ReportStepDisplayWidget extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                _formatNumberWithComma(totalSteps),
+                _formatNumberWithComma(totalValue),
                 style: const TextStyle(
                   fontFamily: 'Montserrat',
                   color: AppColors.textPrimary,
@@ -92,7 +98,7 @@ class ReportStepDisplayWidget extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                AppStrings.totalStep,
+                totalLabel,
                 style: const TextStyle(
                   fontFamily: 'Montserrat',
                   color: AppColors.textSecondary,

@@ -57,10 +57,20 @@ class HomeHeartRateCardWidget extends StatelessWidget {
             ),
           ),
         ),
-        const Icon(
-          Icons.arrow_forward_ios,
-          color: AppColors.buttonOrange,
-          size: 16,
+        GestureDetector(
+          onTap: () {
+            // Chuyển sang màn heart rate list khi bấm icon arrow
+            Get.toNamed(RouteNames.heartRate);
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.all(4),
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.buttonOrange,
+              size: 16,
+            ),
+          ),
         ),
       ],
     );
@@ -124,13 +134,13 @@ class HomeHeartRateCardWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Record button
+                  // Record button -> chuyển thẳng đến màn measure heart rate
                   SizedBox(
                     width: 128,
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.toNamed(RouteNames.heartRate);
+                        Get.toNamed(RouteNames.measureHeartRate);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.cardBackground,
@@ -276,14 +286,14 @@ class HomeHeartRateCardWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Record button
+                // Record button -> chuyển thẳng đến màn measure heart rate
                 Center(
                   child: SizedBox(
                     width: 128,
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.toNamed(RouteNames.heartRate);
+                        Get.toNamed(RouteNames.measureHeartRate);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.cardBackground,

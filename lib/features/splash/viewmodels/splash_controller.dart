@@ -2,21 +2,16 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/core/di/di_setup.dart';
-import 'package:step_counter/features/splash/service/app_data_service.dart';
 import 'package:step_counter/features/splash/service/splash_service.dart';
 
 /// Controller quản lý logic của splash screen
 class SplashController extends GetxController {
   final SplashService _splashService;
-  final AppDataService _appDataService;
   final _loadingProgress = 0.0.obs;
   Timer? _loadingTimer;
 
-  SplashController({
-    SplashService? splashService,
-    AppDataService? appDataService,
-  }) : _splashService = splashService ?? getIt<SplashService>(),
-       _appDataService = appDataService ?? getIt<AppDataService>();
+  SplashController({SplashService? splashService})
+    : _splashService = splashService ?? getIt<SplashService>();
 
   /// Tiến độ loading (0.0 - 1.0)
   double get loadingProgress => _loadingProgress.value;
@@ -49,30 +44,25 @@ class SplashController extends GetxController {
   Future<void> _navigateAfterSplash() async {
     final hasSeenWelcome = await _splashService.hasSeenWelcome();
     if (!hasSeenWelcome) {
-      // Chưa xem welcome → đi đến welcome
+      // TH1: Lần đầu vào app → đi đến welcome
       _navigateToWelcome();
       return;
     }
 
-    // Đã xem welcome → check dữ liệu
-    final hasData = await _appDataService.hasAnyData();
-    if (hasData) {
-      // Có dữ liệu → đi đến home (màn hình đầy đủ)
-      _navigateToHome();
+    // TH2: Đã xem welcome → check xem đã hoàn thành homeFirst chưa
+    final hasCompletedHomeFirst = await _splashService.hasCompletedHomeFirst();
+    if (!hasCompletedHomeFirst) {
+      // Chưa hoàn thành homeFirst → đi đến homeFirst
+      Get.offNamed(RouteNames.homeFirst);
     } else {
-      // Chưa có dữ liệu → đi đến welcome (màn hình first time)
-      _navigateToWelcome();
+      // Đã hoàn thành homeFirst → đi đến home
+      Get.offNamed(RouteNames.home);
     }
   }
 
   /// Điều hướng đến màn hình welcome
   void _navigateToWelcome() {
     Get.offNamed(RouteNames.welcome);
-  }
-
-  /// Điều hướng đến màn hình chính
-  void _navigateToHome() {
-    Get.offNamed(RouteNames.home);
   }
 
   @override

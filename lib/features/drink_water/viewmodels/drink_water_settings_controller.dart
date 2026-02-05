@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:step_counter/core/di/di_setup.dart';
 import 'package:step_counter/features/drink_water/service/drink_water_notification_service.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
+import 'package:step_counter/features/splash/service/splash_service.dart';
 
 /// Controller quản lý settings của drink water
 class DrinkWaterSettingsController extends GetxController {
@@ -169,13 +170,20 @@ class DrinkWaterSettingsController extends GetxController {
 
       _isSaving.value = false;
 
+      // Đánh dấu đã hoàn thành trải nghiệm homeFirst (nếu chưa)
+      final splashService = getIt<SplashService>();
+      if (!await splashService.hasCompletedHomeFirst()) {
+        await splashService.setHomeFirstCompleted();
+      }
+
       // Refresh HomeController để cập nhật home cards real-time
       if (Get.isRegistered<HomeController>()) {
         final homeController = Get.find<HomeController>();
         await homeController.refreshHomeCardsData();
       }
 
-      Get.back(); // Quay lại màn hình trước
+      // Quay lại màn hình trước và báo cho màn trước biết đã lưu thành công
+      Get.back(result: true);
     } catch (e) {
       _isSaving.value = false;
       print('Error saving drink water settings: $e');

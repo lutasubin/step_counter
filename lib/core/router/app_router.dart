@@ -13,6 +13,7 @@ import 'package:step_counter/features/heart_rate/views/heart_rate_result_view.da
 import 'package:step_counter/features/heart_rate/viewmodels/heart_rate_result_controller.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/home/views/home_view.dart';
+import 'package:step_counter/features/home/views/home_first_view.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
 import 'package:step_counter/features/report/service/report_service.dart';
 import 'package:step_counter/features/report/views/report_view.dart';
@@ -43,6 +44,12 @@ class AppRouter {
       binding: WelcomeBinding(),
     ),
     GetPage(
+      name: RouteNames.homeFirst,
+      page: () => const HomeFirstView(),
+      binding: HomeBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
       name: RouteNames.home,
       page: () => const HomeView(),
       binding: HomeBinding(),
@@ -56,6 +63,13 @@ class AppRouter {
     ),
     GetPage(
       name: RouteNames.report,
+      page: () => const ReportView(),
+      binding: ReportBinding(),
+      transition: Transition.noTransition,
+    ),
+    // Report drink water dùng chung ReportView nhưng màu line khác
+    GetPage(
+      name: RouteNames.drinkWaterReport,
       page: () => const ReportView(),
       binding: ReportBinding(),
       transition: Transition.noTransition,

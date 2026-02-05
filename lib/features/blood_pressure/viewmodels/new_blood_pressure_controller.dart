@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:step_counter/core/di/di_setup.dart';
 import 'package:step_counter/features/blood_pressure/model/blood_pressure_model.dart';
 import 'package:step_counter/features/blood_pressure/repositories/blood_pressure_repository.dart';
 import 'package:step_counter/features/blood_pressure/viewmodels/blood_pressure_controller.dart';
-import 'package:step_counter/features/blood_pressure/views/widgets/blood_pressure_info_bottom_sheet.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
+import 'package:step_counter/features/splash/service/splash_service.dart';
 
 /// Controller quản lý logic của new blood pressure screen
 class NewBloodPressureController extends GetxController {
@@ -88,9 +87,17 @@ class NewBloodPressureController extends GetxController {
 
       await _repository.saveBloodPressure(bloodPressure);
 
-      // Refresh danh sách
-      final bloodPressureController = Get.find<BloodPressureController>();
-      await bloodPressureController.refreshBloodPressures();
+      // Đánh dấu đã hoàn thành trải nghiệm homeFirst (nếu chưa)
+      final splashService = getIt<SplashService>();
+      if (!await splashService.hasCompletedHomeFirst()) {
+        await splashService.setHomeFirstCompleted();
+      }
+
+      // Refresh danh sách nếu BloodPressureController đã được đăng ký
+      if (Get.isRegistered<BloodPressureController>()) {
+        final bloodPressureController = Get.find<BloodPressureController>();
+        await bloodPressureController.refreshBloodPressures();
+      }
 
       // Refresh HomeController để cập nhật home cards real-time
       if (Get.isRegistered<HomeController>()) {
@@ -98,14 +105,8 @@ class NewBloodPressureController extends GetxController {
         await homeController.refreshHomeCardsData();
       }
 
-      // Hiển thị bottom sheet Information
-      Get.bottomSheet(
-        const BloodPressureInfoBottomSheet(),
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        isDismissible: false,
-        enableDrag: false,
-      );
+      // Sau khi lưu xong chỉ quay lại màn trước (BloodPressureView hoặc Home)
+      Get.back();
     } catch (e) {
       Get.snackbar(
         'Error',

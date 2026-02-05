@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:step_counter/core/constants/route_names.dart';
 import 'package:step_counter/core/di/di_setup.dart';
+import 'package:step_counter/features/drink_water/model/drink_water_record_model.dart';
+import 'package:step_counter/features/drink_water/repositories/drink_water_repository.dart';
 import 'package:step_counter/features/home/service/step_counter_service.dart';
 import 'package:step_counter/features/report/model/daily_activity_model.dart';
 import 'package:step_counter/features/report/service/report_service.dart';
@@ -11,10 +14,14 @@ enum PeriodType { day, week, month }
 /// Controller quản lý logic của report screen
 class ReportController extends GetxController {
   final ReportService _reportService;
+  final DrinkWaterRepository _drinkWaterRepository =
+      getIt<DrinkWaterRepository>();
+  late final bool isDrinkWaterMode;
   final _selectedPeriod = PeriodType.day.obs;
   final _currentDate = DateTime.now().obs;
   final _activities = <DailyActivityModel>[].obs;
   final _selectedIndex = 0.obs;
+  final _reloadToken = 0.obs;
 
   ReportController(this._reportService);
 
@@ -30,24 +37,41 @@ class ReportController extends GetxController {
   /// Index được chọn trên chart
   int get selectedIndex => _selectedIndex.value;
 
+  /// Token để trigger reload cho các widget dùng FutureBuilder (drink mode)
+  int get reloadToken => _reloadToken.value;
+
   @override
   void onInit() {
     super.onInit();
+    // Xác định chế độ: báo cáo bước chân hay báo cáo uống nước
+    // Nếu route là drinkWaterReport hoặc arguments là 'drink-water' thì là chế độ drink
+    final currentRoute = Get.currentRoute;
+    final args = Get.arguments;
+    isDrinkWaterMode =
+        currentRoute == RouteNames.drinkWaterReport || args == 'drink-water';
     _loadData();
   }
 
   @override
   void onReady() {
     super.onReady();
-    // Sync dữ liệu hôm nay từ pedometer
-    _syncTodayData();
-    // Reload data khi màn hình sẵn sàng
-    _loadData();
+    // Chỉ sync pedometer cho chế độ bước chân
+    if (!isDrinkWaterMode) {
+      _syncTodayData();
+      // Reload data khi màn hình sẵn sàng
+      _loadData();
+    }
   }
 
   /// Load dữ liệu
   Future<void> _loadData() async {
     await _loadActivities();
+  }
+
+  /// Reload dữ liệu cho report drink water sau khi user đổi setting
+  Future<void> reloadDrinkReport() async {
+    await _loadActivities();
+    _reloadToken.value++;
   }
 
   /// Sync dữ liệu hôm nay từ pedometer
@@ -111,24 +135,43 @@ class ReportController extends GetxController {
 
   /// Load activities theo period
   Future<void> _loadActivities() async {
-    switch (_selectedPeriod.value) {
-      case PeriodType.day:
-        // Normalize date về 00:00:00 để query đúng
-        final normalizedDate = DateTime(
-          _currentDate.value.year,
-          _currentDate.value.month,
-          _currentDate.value.day,
-        );
-        final activity = await _reportService.getActivityByDate(normalizedDate);
-        _activities.value = _generateDayHourlyData(activity);
-        break;
-      case PeriodType.week:
-        final weekStart = _getWeekStart(_currentDate.value);
-        _activities.value = await _generateWeekData(weekStart);
-        break;
-      case PeriodType.month:
-        _activities.value = await _generateMonthData(_currentDate.value);
-        break;
+    // Nếu là report drink water → load dữ liệu uống nước từ SQLite
+    if (isDrinkWaterMode) {
+      switch (_selectedPeriod.value) {
+        case PeriodType.day:
+          _activities.value = await _generateDrinkDayData(_currentDate.value);
+          break;
+        case PeriodType.week:
+          final weekStart = _getWeekStart(_currentDate.value);
+          _activities.value = await _generateDrinkWeekData(weekStart);
+          break;
+        case PeriodType.month:
+          _activities.value = await _generateDrinkMonthData(_currentDate.value);
+          break;
+      }
+    } else {
+      // Report bước chân: dùng dữ liệu từ ReportService như cũ
+      switch (_selectedPeriod.value) {
+        case PeriodType.day:
+          // Normalize date về 00:00:00 để query đúng
+          final normalizedDate = DateTime(
+            _currentDate.value.year,
+            _currentDate.value.month,
+            _currentDate.value.day,
+          );
+          final activity = await _reportService.getActivityByDate(
+            normalizedDate,
+          );
+          _activities.value = _generateDayHourlyData(activity);
+          break;
+        case PeriodType.week:
+          final weekStart = _getWeekStart(_currentDate.value);
+          _activities.value = await _generateWeekData(weekStart);
+          break;
+        case PeriodType.month:
+          _activities.value = await _generateMonthData(_currentDate.value);
+          break;
+      }
     }
     // Reset selectedIndex về 0 khi load dữ liệu mới
     // Tránh index out of range khi chuyển period hoặc khi activities thay đổi
@@ -169,6 +212,40 @@ class ReportController extends GetxController {
     });
   }
 
+  /// Tạo dữ liệu uống nước cho Day view: chia 6 khoảng 4 giờ, mỗi khoảng tổng ml
+  Future<List<DailyActivityModel>> _generateDrinkDayData(
+    DateTime currentDate,
+  ) async {
+    // Lấy tất cả record uống nước trong ngày
+    final records = await _drinkWaterRepository.getRecordsByDate(currentDate);
+    final date = DateTime(currentDate.year, currentDate.month, currentDate.day);
+
+    // 6 khoảng 4 giờ: 00-04, 04-08, 08-12, 12-16, 16-20, 20-24
+    final buckets = List<int>.filled(6, 0);
+
+    for (final DrinkWaterRecordModel record in records) {
+      final hour = record.dateTime.hour;
+      final bucketIndex = hour ~/ 4; // 0..5
+      if (bucketIndex >= 0 && bucketIndex < 6) {
+        buckets[bucketIndex] += record.amount;
+      }
+    }
+
+    return List.generate(6, (index) {
+      final hourStart = index * 4;
+      final amount = buckets[index];
+
+      return DailyActivityModel(
+        date: DateTime(date.year, date.month, date.day, hourStart),
+        // Reuse trường steps để biểu diễn ml cho chart
+        steps: amount,
+        calories: 0,
+        distance: 0,
+        durationSeconds: 0,
+      );
+    });
+  }
+
   /// Tạo đủ 7 ngày cho Week view (kể cả ngày không có dữ liệu -> 0 step)
   Future<List<DailyActivityModel>> _generateWeekData(DateTime weekStart) async {
     final rawActivities = await _reportService.getActivitiesByWeek(weekStart);
@@ -196,6 +273,30 @@ class ReportController extends GetxController {
 
       return existing;
     });
+  }
+
+  /// Tạo dữ liệu uống nước cho Week view: 7 ngày, mỗi ngày tổng ml
+  Future<List<DailyActivityModel>> _generateDrinkWeekData(
+    DateTime weekStart,
+  ) async {
+    return Future.wait(
+      List.generate(7, (index) async {
+        final date = DateTime(
+          weekStart.year,
+          weekStart.month,
+          weekStart.day + index,
+        );
+        final totalMl = await _drinkWaterRepository.getTotalAmountByDate(date);
+
+        return DailyActivityModel(
+          date: date,
+          steps: totalMl, // dùng steps làm ml
+          calories: 0,
+          distance: 0,
+          durationSeconds: 0,
+        );
+      }),
+    );
   }
 
   /// Tạo dữ liệu tháng: chỉ lấy những ngày có step > 0
@@ -304,6 +405,68 @@ class ReportController extends GetxController {
       print('  Day ${activity.date.day}: ${activity.steps} steps');
     }
 
+    return result;
+  }
+
+  /// Tạo dữ liệu uống nước cho Month view: chỉ lấy những ngày có ml > 0,
+  /// nhưng vẫn đảm bảo có các mốc 1, 15, và ngày cuối tháng trên trục X
+  Future<List<DailyActivityModel>> _generateDrinkMonthData(
+    DateTime monthDate,
+  ) async {
+    final year = monthDate.year;
+    final month = monthDate.month;
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+
+    // Lấy tổng ml cho từng ngày trong tháng
+    final dayTotals = <int, int>{};
+    for (int day = 1; day <= daysInMonth; day++) {
+      final date = DateTime(year, month, day);
+      final totalMl = await _drinkWaterRepository.getTotalAmountByDate(date);
+      dayTotals[day] = totalMl;
+    }
+
+    final milestoneDays = <int>[1, 15, daysInMonth];
+    final result = <DailyActivityModel>[];
+    final addedDays = <int>{};
+
+    // Thêm các mốc (1, 15, ngày cuối tháng)
+    for (final day in milestoneDays) {
+      if (day <= daysInMonth) {
+        final date = DateTime(year, month, day);
+        final totalMl = dayTotals[day] ?? 0;
+        result.add(
+          DailyActivityModel(
+            date: date,
+            steps: totalMl,
+            calories: 0,
+            distance: 0,
+            durationSeconds: 0,
+          ),
+        );
+        addedDays.add(day);
+      }
+    }
+
+    // Thêm các ngày còn lại có ml > 0
+    for (int day = 1; day <= daysInMonth; day++) {
+      if (addedDays.contains(day)) continue;
+      final totalMl = dayTotals[day] ?? 0;
+      if (totalMl > 0) {
+        final date = DateTime(year, month, day);
+        result.add(
+          DailyActivityModel(
+            date: date,
+            steps: totalMl,
+            calories: 0,
+            distance: 0,
+            durationSeconds: 0,
+          ),
+        );
+      }
+    }
+
+    // Sắp xếp theo ngày
+    result.sort((a, b) => a.date.day.compareTo(b.date.day));
     return result;
   }
 

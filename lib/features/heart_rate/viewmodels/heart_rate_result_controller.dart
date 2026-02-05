@@ -5,6 +5,7 @@ import 'package:step_counter/features/heart_rate/repositories/heart_rate_reposit
 import 'package:step_counter/features/heart_rate/viewmodels/heart_rate_controller.dart';
 import 'package:step_counter/features/heart_rate/views/widgets/heart_rate_info_dialog.dart';
 import 'package:step_counter/features/home/viewmodels/home_controller.dart';
+import 'package:step_counter/features/splash/service/splash_service.dart';
 
 /// Controller quản lý logic của heart rate result screen
 class HeartRateResultController extends GetxController {
@@ -75,6 +76,12 @@ class HeartRateResultController extends GetxController {
 
       // Lưu vào SQLite
       await _repository.saveHeartRate(heartRate);
+
+      // Đánh dấu đã hoàn thành trải nghiệm homeFirst (nếu chưa)
+      final splashService = getIt<SplashService>();
+      if (!await splashService.hasCompletedHomeFirst()) {
+        await splashService.setHomeFirstCompleted();
+      }
 
       // Refresh HeartRateController để load dữ liệu mới
       final heartRateController = Get.find<HeartRateController>();
