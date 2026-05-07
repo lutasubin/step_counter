@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,12 +14,18 @@ class StepCounterRepositoryImpl implements StepCounterRepository {
 
   @override
   Future<bool> checkPermission() async {
+    if (!Platform.isAndroid) {
+      return true;
+    }
     final status = await Permission.activityRecognition.status;
     return status.isGranted;
   }
 
   @override
   Future<bool> requestPermission() async {
+    if (!Platform.isAndroid) {
+      return true;
+    }
     final status = await Permission.activityRecognition.request();
     return status.isGranted;
   }
